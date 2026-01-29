@@ -2,8 +2,8 @@ import Image from "next/image";
 
 export default function Home() {
   return (
-    <div className="clas">
-      test
+    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
+     Test
     </div>
   );
 }
