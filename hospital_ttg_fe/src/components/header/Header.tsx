@@ -7,7 +7,7 @@ export default function Header() {
     // <!-- Header -->
     <header className="w-full">
       {/* <!-- Top Bar --> */}
-      <div className="bg-green-700 py-2">
+      <div className="bg-green-500 py-2">
         <div className="container mx-auto px-4 flex justify-end items-center gap-4">
           <a
             href="tel:0966101616"

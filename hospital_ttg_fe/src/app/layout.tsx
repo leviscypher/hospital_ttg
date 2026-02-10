@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "@/styles/globals.css";
+import { ThemeModeScript } from 'flowbite-react';
 
 import { config } from "@fortawesome/fontawesome-svg-core";
 import "@fortawesome/fontawesome-svg-core/styles.css";
@@ -39,6 +40,7 @@ export default function RootLayout({
         <link
           href="https://fonts.googleapis.com/css2?family=Roboto:ital,wdth,wght@0,75..100,100..900;1,75..100,100..900&display=swap"
           rel="stylesheet"></link>
+           <ThemeModeScript />
       </head>
       <body>
         <main>{children}</main>

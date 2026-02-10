@@ -2,9 +2,9 @@ import Image from "next/image";
 export default function Footer() {
   return (
     // <!-- Footer -->
-    <footer className="bg-green-700 text-white">
+    <footer className="bg-[#008046] text-white">
       {/* <!-- Top Yellow Bar --> */}
-      <div className="bg-yellow-500 text-gray-800 py-3">
+      <div className="bg-[#ffc52c] text-gray-800 py-3">
         <div className="container mx-auto px-4">
           <p className="text-sm font-semibold">
             <i className="fas fa-phone-alt mr-2"></i>
@@ -211,7 +211,7 @@ export default function Footer() {
         </div>
       </div>
 
-      <div className="bg-green-800 py-4">
+      <div className="py-4">
         <div className="container mx-auto px-4">
           <p className="text-center text-sm text-green-200">
             Copyright © 2026 - Bản quyền thuộc về Bệnh viện đa khoa Thạch Thất 

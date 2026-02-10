@@ -13,6 +13,9 @@
     "@fortawesome/free-brands-svg-icons": "^7.1.0",
     "@fortawesome/free-solid-svg-icons": "^7.1.0",
     "@fortawesome/react-fontawesome": "^3.2.0",
+    "flowbite": "^4.0.1",
+    "flowbite-react": "^0.12.17",
+    "flyonui": "^2.4.1",
     "next": "16.1.6",
     "react": "19.2.3",
     "react-dom": "19.2.3"
