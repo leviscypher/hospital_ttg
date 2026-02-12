@@ -2,17 +2,114 @@ import Image from "next/image";
 import type { Metadata } from "next";
 import Carousel from "@/components/home/Carousel";
 import QuickActionBar from "@/components/home/QuickActionBar";
+import SpecialtySection from "@/components/home/SpecialtySection";
+import FeaturedServices from "@/components/home/FeaturedServices";
+import DoctorSection from "@/components/home/DoctorSection";
 
 export const metadata: Metadata = {
   title: "Trang chủ",
 };
 export default function Home() {
+  const featuredServicesData = {
+    subtitle: "ĐƠN VỊ",
+    title: "Dịch vụ y khoa",
+    description: "Chăm sóc sức khỏe toàn diện cho gia đình bạn",
+    buttonText: "Xem tất cả",
+    services: [
+      {
+        title: "Dán sứ thẩm mỹ – Nâng tầm nhan sắc",
+        image: "/images/doctor/doctor1.jpg",
+      },
+      {
+        title: "Hút u vú chân không công nghệ VABB",
+        image: "/images/doctor/doctor2.jpg",
+      },
+      {
+        title: "Đốt u tuyến giáp công nghệ RFA",
+        image: "/images/doctor/doctor2.jpg",
+      },
+      {
+        title: "Đốt u tuyến giáp công nghệ RFA",
+        image: "/images/doctor/doctor2.jpg",
+      },
+      {
+        title: "Đốt u tuyến giáp công nghệ RFA",
+        image: "/images/doctor/doctor2.jpg",
+      },
+      {
+        title: "Đốt u tuyến giáp công nghệ RFA",
+        image: "/images/doctor/doctor2.jpg",
+      },
+      {
+        title: "Đốt u tuyến giáp công nghệ RFA",
+        image: "/images/doctor/doctor2.jpg",
+      },
+      {
+        title: "Đốt u tuyến giáp công nghệ RFA",
+        image: "/images/doctor/doctor2.jpg",
+      },
+    ],
+  };
+  const featuredNewsData = {
+    subtitle: "TIN TỨC",
+    title: "Tin tức nổi bật",
+    description:
+      "Cập nhật thông tin y tế và hoạt động mới nhất của bệnh viện",
+    buttonText: "Xem tất cả",
+    services: [
+      {
+        title:
+          "Bệnh viện triển khai kỹ thuật mới trong điều trị tim mạch",
+        slug: "ky-thuat-moi-dieu-tri-tim-mach",
+        image: "/images/doctor/doctor3.jpg",
+        excerpt:
+          "Kỹ thuật can thiệp tim mạch hiện đại giúp nâng cao hiệu quả điều trị và rút ngắn thời gian hồi phục cho bệnh nhân.",
+        date: "2026-02-10",
+        category: "Y tế",
+      },
+      {
+        title: "Khám sức khỏe tổng quát định kỳ – Vì sao cần thiết?",
+        slug: "kham-suc-khoe-tong-quat",
+        image: "/images/doctor/doctor3.jpg",
+        excerpt:
+          "Khám sức khỏe định kỳ giúp phát hiện sớm bệnh lý và bảo vệ sức khỏe lâu dài cho bạn và gia đình.",
+        date: "2026-02-08",
+        category: "Sức khỏe",
+      },
+      {
+        title: "Ứng dụng công nghệ AI trong chẩn đoán hình ảnh",
+        slug: "ai-trong-chan-doan-hinh-anh",
+        image: "/images/doctor/doctor3.jpg",
+        excerpt:
+          "Công nghệ AI đang được bệnh viện ứng dụng nhằm nâng cao độ chính xác trong chẩn đoán bệnh.",
+        date: "2026-02-06",
+        category: "Công nghệ",
+      },
+      {
+        title: "Chương trình khám miễn phí cho người cao tuổi",
+        slug: "kham-mien-phi-nguoi-cao-tuoi",
+        image: "/images/doctor/doctor3.jpg",
+        excerpt:
+          "Bệnh viện tổ chức chương trình khám sức khỏe miễn phí dành cho người cao tuổi trên địa bàn.",
+        date: "2026-02-05",
+        category: "Hoạt động",
+      },
+    ],
+  };
+
   return (
     <div className="home">
       <section className="relative">
-        <Carousel></Carousel>
-        <div className="p-4">
+        <section className="relative">
+          <Carousel />
+
           <QuickActionBar />
+        </section>
+        <div className="p-4">
+          <SpecialtySection></SpecialtySection>
+          <FeaturedServices data={featuredServicesData} />;
+          <FeaturedServices data={featuredNewsData} />;
+          <DoctorSection/>;
         </div>
       </section>
     </div>

@@ -94,15 +94,17 @@ export default function Carousel() {
         onMouseUp={(e) => handleEnd(e.clientX)}
         onMouseLeave={(e) => handleEnd(e.clientX)}
         onTouchStart={(e) => handleStart(e.touches[0].clientX)}
-        onTouchEnd={(e) => handleEnd(e.changedTouches[0].clientX)}
-      >
+        onTouchEnd={(e) => handleEnd(e.changedTouches[0].clientX)}>
         {extendedSlides.map((src, index) => (
-          <div key={index} className="relative w-full h-[400px] flex-shrink-0 select-none">
+          <div
+            key={index}
+            className="relative w-full flex-shrink-0 select-none
+              h-[200px] sm:h-[300px] md:h-[420px] lg:h-[520px] xl:h-[620px]">
             <Image
               src={src}
               alt={`Slide ${index}`}
               fill
-              className="object-contain pointer-events-none"
+              className="object-cover sm:object-cover md:object-cover pointer-events"
             />
           </div>
         ))}
