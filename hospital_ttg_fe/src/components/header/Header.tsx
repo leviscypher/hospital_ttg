@@ -19,8 +19,8 @@ const menuItems = [
   {
     title: "Tin tức",
     children: [
-      { title: "Tin nội bộ", href: "#" },
-      { title: "Câu chuyện bệnh nhân", href: "#" },
+      { title: "Tin nội bộ", href: "/news/insider_information" },
+      { title: "Câu chuyện bệnh nhân", href: "/news/patient_story" },
     ],
   },
   {
@@ -86,22 +86,24 @@ export default function Header() {
       <div className="bg-white border-b border-gray-300">
         <div className="max-w-7xl mx-auto flex items-center justify-between px-4 py-3">
           {/* LOGO */}
-          <div className="flex items-center gap-3">
-            <Image
-              src="/images/logo/logo.jpg"
-              alt="Logo"
-              width={60}
-              height={60}
-            />
-            <div>
-              <h4 className="font-bold text-gray-800 text-sm sm:text-base">
-                BỆNH VIỆN ĐA KHOA THẠCH THẤT
-              </h4>
-              <p className="hidden sm:block text-green-600 text-xs">
-                THACH THAT GENERAL HOSPITAL
-              </p>
+          <Link href="/">
+            <div className="flex items-center gap-3">
+              <Image
+                src="/images/logo/logo.jpg"
+                alt="Logo"
+                width={60}
+                height={60}
+              />
+              <div>
+                <h4 className="font-bold text-gray-800 text-sm sm:text-base">
+                  BỆNH VIỆN ĐA KHOA THẠCH THẤT
+                </h4>
+                <p className="hidden sm:block text-green-600 text-xs">
+                  THACH THAT GENERAL HOSPITAL
+                </p>
+              </div>
             </div>
-          </div>
+          </Link>
           <div className="hidden lg:block flex-1 px-6">
             <div className="relative h-[60px] w-full">
               <Image
