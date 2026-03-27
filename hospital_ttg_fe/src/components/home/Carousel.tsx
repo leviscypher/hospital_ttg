@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 
-const slides = ["/images/banner/banner2.gif"];
+const slides = ["/images/banner/Ngoai.png"];
 
 export default function Carousel() {
   const isSingle = slides.length === 1;

@@ -1,12 +1,13 @@
+'use client'
 import Image from "next/image";
 import Link from "next/link";
 
 const specialties = [
-  "Trung tâm Cấp cứu A9",
-  "Trung tâm Hồi sức tích cực",
-  "Trung tâm Hô hấp",
-  "Trung tâm Huyết học và Truyền máu",
-  "Trung tâm Phẫu thuật tiêu hóa",
+  "Khoa Khám bệnh",
+  "Khoa Nội tổng hợp",
+  "Khoa Ngoại tổng hợp",
+  "Khoa Phụ sản",
+  "Khoa Nhi",
 ];
 
 export default function SpecialtySection() {
@@ -37,7 +38,7 @@ export default function SpecialtySection() {
           ))}
         </ul>
 
-        <Link
+        <Link prefetch
           href="#"
           className="inline-block mt-8 bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold transition">
           Xem tất cả

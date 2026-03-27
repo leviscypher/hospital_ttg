@@ -1,3 +1,5 @@
+'use client'
+
 import Image from "next/image";
 import Link from "next/link";
 import { NewsItem } from "@/types/news";
@@ -8,7 +10,7 @@ interface Props {
 
 export default function Card({ item }: Props) {
   return (
-    <Link href={item.href} className="group block">
+    <Link href={item.href} className="group block" prefetch>
       <div className="relative overflow-hidden rounded-2xl shadow-md hover:shadow-xl transition duration-300">
 
         {/* Image */}

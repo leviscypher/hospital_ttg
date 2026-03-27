@@ -1,3 +1,4 @@
+'use client'
 // components/news/Pagination.tsx
 interface Props {
   currentPage: number;

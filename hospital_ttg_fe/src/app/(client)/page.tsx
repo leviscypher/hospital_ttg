@@ -17,36 +17,12 @@ export default function Home() {
     buttonText: "Xem tất cả",
     services: [
       {
-        title: "Dán sứ thẩm mỹ – Nâng tầm nhan sắc",
-        image: "/images/doctor/doctor1.jpg",
+        title: "Dịch vụ tư vấn tâm lý",
+        image: "/images/doctor/doctor5.jpg",
       },
       {
-        title: "Hút u vú chân không công nghệ VABB",
-        image: "/images/doctor/doctor2.jpg",
-      },
-      {
-        title: "Đốt u tuyến giáp công nghệ RFA",
-        image: "/images/doctor/doctor2.jpg",
-      },
-      {
-        title: "Đốt u tuyến giáp công nghệ RFA",
-        image: "/images/doctor/doctor2.jpg",
-      },
-      {
-        title: "Đốt u tuyến giáp công nghệ RFA",
-        image: "/images/doctor/doctor2.jpg",
-      },
-      {
-        title: "Đốt u tuyến giáp công nghệ RFA",
-        image: "/images/doctor/doctor2.jpg",
-      },
-      {
-        title: "Đốt u tuyến giáp công nghệ RFA",
-        image: "/images/doctor/doctor2.jpg",
-      },
-      {
-        title: "Đốt u tuyến giáp công nghệ RFA",
-        image: "/images/doctor/doctor2.jpg",
+        title: "Chụp X-Quang",
+        image: "/images/doctor/doctor6.jpg",
       },
     ],
   };

@@ -26,35 +26,34 @@ const menuItems = [
   {
     title: "Thông tin hoạt động",
     children: [
-      { title: "Hoạt động chuyên môn", href: "#" },
-      { title: "Hoạt động Quản lý Chất lượng", href: "#" },
-      { title: "Hoạt động Công tác xã hội", href: "#" },
+      { title: "Hoạt động chuyên môn", href: "/operational_information/professional_activities" },
+      { title: "Hoạt động Quản lý Chất lượng", href: "/operational_information/quality_management_activities" },
+      { title: "Hoạt động Công tác xã hội", href: "/operational_information/social_work_activities" },
     ],
   },
   {
     title: "Dịch vụ y khoa",
     children: [
-      { title: "Giá DVKTYT", href: "#" },
-      { title: "Dịch vụ tư vấn tâm lý", href: "#" },
-      { title: "Chụp X-quang", href: "#" },
-      { title: "Khám sức khỏe", href: "#" },
+      { title: "Giá DVKTYT", href: "/medical_services/psychological_counseling_services" },
+      { title: "Dịch vụ tư vấn tâm lý", href: "/medical_services/service_price" },
+      { title: "Chụp X-quang", href: "/medical_services/x-ray" },
     ],
   },
   {
     title: "Thư viện",
     children: [
-      { title: "Ảnh", href: "#" },
-      { title: "Video", href: "#" },
+      { title: "Ảnh", href: "/library/image" },
+      { title: "Video", href: "/library/video" },
     ],
   },
   {
     title: "Tuyển dụng & Thông báo",
     children: [
-      { title: "Tuyển dụng", href: "#" },
-      { title: "Thông báo", href: "#" },
+      { title: "Tuyển dụng", href: "/recruitment_nnouncements/recruitment" },
+      { title: "Thông báo", href: "/recruitment_nnouncements/notification" },
     ],
   },
-  { title: "Liên hệ", href: "#" },
+  { title: "Liên hệ", href: "/contact" },
 ];
 
 export default function Header() {
@@ -86,7 +85,7 @@ export default function Header() {
       <div className="bg-white border-b border-gray-300">
         <div className="max-w-7xl mx-auto flex items-center justify-between px-4 py-3">
           {/* LOGO */}
-          <Link href="/">
+          <Link href="/" prefetch>
             <div className="flex items-center gap-3">
               <Image
                 src="/images/logo/logo.jpg"
@@ -140,7 +139,7 @@ export default function Header() {
         <ul className="max-w-7xl mx-auto flex justify-center gap-8 py-4 text-[15px] font-medium">
           {menuItems.map((item, index) => (
             <li key={index} className="relative group">
-              <Link
+              <Link prefetch
                 href={item.href || "#"}
                 className="text-dark-700 text-[17px] hover:text-green-600 transition flex items-center gap-1">
                 {item.title}
@@ -168,7 +167,7 @@ export default function Header() {
                   <ul className="bg-white text-dark-700 text-[17px] shadow-xl rounded-xl min-w-[230px] border border-gray-100 py-2">
                     {item.children.map((sub, i) => (
                       <li key={i}>
-                        <Link
+                        <Link prefetch
                           href={sub.href}
                           className="block px-5 py-2 text-gray-700 hover:bg-green-50 hover:text-green-600 transition-colors duration-200">
                           {sub.title}
@@ -197,7 +196,7 @@ export default function Header() {
           {menuItems.map((item, index) => (
             <li key={index}>
               <div className="flex justify-between items-center">
-                <Link
+                <Link prefetch
                   href={item.href || "#"}
                   className="block py-2 text-gray-800"
                   onClick={() =>
@@ -226,7 +225,7 @@ export default function Header() {
                   <ul className="pl-4 space-y-2">
                     {item.children.map((sub, i) => (
                       <li key={i}>
-                        <Link
+                        <Link prefetch
                           href={sub.href}
                           className="block py-1 text-gray-600 hover:text-green-600"
                           onClick={() => setOpenMenu(false)}>

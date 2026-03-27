@@ -11,29 +11,24 @@ interface Doctor {
 
 const doctors: Doctor[] = [
   {
-    name: "PGS. TS. Nguyễn Thị Thu Hoài",
-    title: "Viện trưởng Viện Tim mạch",
-    image: "/images/doctor/doctor4.jpg",
+    name: "BSCK - Nguyễn Văn A",
+    title: "Trưởng khoa chuẩn đoán hình ảnh",
+    image: "/images/doctor/doctor7.jpg",
   },
   {
-    name: "PGS. TS. Phạm Thị Việt Dung",
-    title: "Trưởng khoa Phẫu thuật Tạo hình",
-    image: "/images/doctor/doctor4.jpg",
+    name: "BSCK - Nguyễn Văn B",
+    title: "Trưởng khoa Nhi",
+    image: "/images/doctor/doctor7.jpg",
   },
   {
-    name: "PGS.TS. Lê Công Định",
-    title: "Trưởng khoa Tai Mũi Họng",
-    image: "/images/doctor/doctor4.jpg",
+    name: "BSCK - Nguyễn Văn B",
+    title: "Trưởng khoa ngoại",
+    image: "/images/doctor/doctor7.jpg",
   },
   {
-    name: "BSCKII. Trần Thái Sơn",
-    title: "Trưởng khoa Da liễu",
-    image: "/images/doctor/doctor4.jpg",
-  },
-  {
-    name: "BS. Nguyễn Văn A",
-    title: "Khoa Nội tổng hợp",
-    image: "/images/doctor/doctor4.jpg",
+    name: "BSCK - Nguyễn Văn B",
+    title: "Trưởng khoa khám bệnh",
+    image: "/images/doctor/doctor7.jpg",
   },
 ];
 
@@ -42,6 +37,9 @@ export default function DoctorSlider() {
   const [current, setCurrent] = useState(4);
   const [transition, setTransition] = useState(true);
   const [paused, setPaused] = useState(false);
+
+  // ✅ check đủ data để loop chưa
+  const isLoopable = doctors.length > visible;
 
   // responsive
   useEffect(() => {
@@ -57,31 +55,44 @@ export default function DoctorSlider() {
 
   const slideWidth = 100 / visible;
 
+  // ✅ chỉ clone khi đủ data
   const sliderData = useMemo(() => {
+    if (!isLoopable) return doctors;
+
     const clone = visible;
     return [
       ...doctors.slice(-clone),
       ...doctors,
       ...doctors.slice(0, clone),
     ];
-  }, [visible]);
+  }, [visible, isLoopable]);
 
-  const next = () => setCurrent((prev) => prev + 1);
-  const prev = () => setCurrent((prev) => prev - 1);
+  // ✅ next / prev
+  const next = () => {
+    if (!isLoopable) return;
+    setCurrent((prev) => prev + 1);
+  };
 
-  // auto slide
+  const prev = () => {
+    if (!isLoopable) return;
+    setCurrent((prev) => prev - 1);
+  };
+
+  // ✅ auto slide (tắt nếu ít data)
   useEffect(() => {
-    if (paused) return;
+    if (paused || !isLoopable) return;
 
     const timer = setInterval(() => {
       setCurrent((prev) => prev + 1);
     }, 3000);
 
     return () => clearInterval(timer);
-  }, [paused]);
+  }, [paused, isLoopable]);
 
-  // loop vô hạn
+  // ✅ loop vô hạn (tắt nếu ít data)
   useEffect(() => {
+    if (!isLoopable) return;
+
     const total = doctors.length;
 
     if (current >= total + visible) {
@@ -97,13 +108,19 @@ export default function DoctorSlider() {
         setCurrent(total + visible - 1);
       }, 500);
     }
-  }, [current, visible]);
+  }, [current, visible, isLoopable]);
 
+  // giữ nguyên
   useEffect(() => {
     if (!transition) {
       requestAnimationFrame(() => setTransition(true));
     }
   }, [transition]);
+
+  // ✅ reset current khi đổi visible
+  useEffect(() => {
+    setCurrent(isLoopable ? visible : 0);
+  }, [visible, isLoopable]);
 
   return (
     <section className="max-w-7xl mx-auto px-4 py-12">
@@ -132,19 +149,24 @@ export default function DoctorSlider() {
         onMouseEnter={() => setPaused(true)}
         onMouseLeave={() => setPaused(false)}
       >
-        <button
-          onClick={prev}
-          className="absolute left-2 top-1/2 -translate-y-1/2 bg-white shadow p-2 rounded-full z-10 cursor-pointer"
-        >
-          ❮
-        </button>
+        {/* ❌ chỉ hiện khi loop được */}
+        {isLoopable && (
+          <>
+            <button
+              onClick={prev}
+              className="absolute left-2 top-1/2 -translate-y-1/2 bg-white shadow p-2 rounded-full z-10 cursor-pointer"
+            >
+              ❮
+            </button>
 
-        <button
-          onClick={next}
-          className="absolute right-2 top-1/2 -translate-y-1/2 bg-white shadow p-2 rounded-full z-10 cursor-pointer" 
-        >
-          ❯
-        </button>
+            <button
+              onClick={next}
+              className="absolute right-2 top-1/2 -translate-y-1/2 bg-white shadow p-2 rounded-full z-10 cursor-pointer"
+            >
+              ❯
+            </button>
+          </>
+        )}
 
         <div
           className={`flex ${
