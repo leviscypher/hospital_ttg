@@ -1,7 +1,9 @@
 export interface NewsItem {
-  id: string;
+  id: number;
   title: string;
   image: string;
   date: string;
-  href: string;
+  category: string;
+  views: number;
+  content: string[];
 }

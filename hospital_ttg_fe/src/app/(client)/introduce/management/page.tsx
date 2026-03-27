@@ -8,21 +8,16 @@ export const metadata: Metadata = {
 };
 export default function Page() {
   const director: Leader = {
-    name: "PGS. TS. Đào Xuân Cơ",
+    name: "Bà Nguyễn Văn A",
     title: "Giám đốc bệnh viện",
-    image: "/images/doctor/doctor2.jpg",
+    image: "/images/doctor/doctor7.jpg",
   };
 
   const viceDirectors: Leader[] = [
     {
-      name: "PGS. TS. Vũ Văn Giáp",
+      name: "Ông Nguyễn Văn B",
       title: "Phó giám đốc bệnh viện",
-      image: "/images/doctor/doctor2.jpg",
-    },
-    {
-      name: "PGS. TS. Nguyễn Tuấn Tùng",
-      title: "Phó giám đốc bệnh viện",
-      image: "/images/doctor/doctor2.jpg",
+      image: "/images/doctor/doctor7.jpg",
     },
   ];
 

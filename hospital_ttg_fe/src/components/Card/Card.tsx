@@ -2,15 +2,16 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { NewsItem } from "@/types/news";
+import { NewsItem } from "@/types/news/news";
 
 interface Props {
   item: NewsItem;
 }
 
 export default function Card({ item }: Props) {
+  // console.log(item)
   return (
-    <Link href={item.href} className="group block" prefetch>
+    <Link href={`/detail/1`} className="group block" prefetch>
       <div className="relative overflow-hidden rounded-2xl shadow-md hover:shadow-xl transition duration-300">
 
         {/* Image */}

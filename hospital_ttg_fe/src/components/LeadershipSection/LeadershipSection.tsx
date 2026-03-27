@@ -40,7 +40,7 @@ export default function LeadershipSection({
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 md:gap-12 max-w-4xl mx-auto">
           {viceDirectors.map((item, index) => (
-            <Link  key={index} href={`/detail/1`} prefetch>
+            <Link  key={index} href={`/detail/2`} prefetch>
               <div key={index} className="text-center group">
                 <div className="relative w-[200px] sm:w-[240px] md:w-[280px] h-[280px] sm:h-[320px] md:h-[380px] mx-auto rounded-3xl overflow-hidden shadow-xl transition duration-300 group-hover:-translate-y-2">
                   <Image

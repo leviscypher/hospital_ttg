@@ -1,23 +1,31 @@
 'use client'
 import Image from "next/image";
 
-export default function NewsDetail() {
+interface NewsDetailProps {
+  title: string;
+  date: string;
+  views: number;
+  category: string;
+  image: string;
+  content: string[];
+}
+
+export default function NewsDetail(props: NewsDetailProps) {
+  console.log("data",props);
   return (
     <article>
-      <h1 className="text-3xl font-bold mb-4">
-        Giám Đốc Bệnh viện
-      </h1>
+      <h1 className="text-3xl font-bold mb-4">{props.title}</h1>
 
       <div className="flex items-center text-sm text-gray-500 gap-4 mb-6">
-        <span>📅 24/07/2025</span>
-        <span>👁 12.670 lượt xem</span>
-        <span className="text-green-600 font-medium">Ban lãnh đạo bệnh viện</span>
+        <span>📅 {props.date}</span>
+        <span>👁 {props.views.toLocaleString()} lượt xem</span>
+        <span className="text-green-600 font-medium">{props.category}</span>
       </div>
 
       <div className="flex justify-center mb-6">
         <Image
-          src="/images/doctor/doctor2.jpg"
-          alt="Giám đốc bệnh viện"
+          src={props.image}
+          alt={props.title}
           width={400}
           height={500}
           className="rounded-lg shadow-md"
@@ -25,12 +33,9 @@ export default function NewsDetail() {
       </div>
 
       <div className="space-y-4 text-gray-700 leading-relaxed">
-        <p>
-          Phó Giáo sư, Tiến sĩ Đào Xuân Cơ hiện là Giám đốc Bệnh viện Bạch Mai...
-        </p>
-        <p>
-          Trên cương vị Giám đốc, ông đã đưa ra nhiều chiến lược đột phá...
-        </p>
+        {props.content.map((item, index) => (
+          <p key={index}>{item}</p>
+        ))}
       </div>
     </article>
   );

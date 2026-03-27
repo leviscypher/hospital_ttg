@@ -3,12 +3,15 @@ import { NewsItem } from "@/types/news/news";
 
 const data: NewsItem[] = [
   {
-    id: "1",
-    title: "Đừng để thủy đậu trở thành 'bản án' với người mắc bệnh nền",
+    id: 3,
+    title:
+      "Đừng để thủy đậu trở thành 'bản án' với người mắc bệnh nền",
     image: "/images/doctor/doctor2.jpg",
     date: "05/02/2026",
-    href: "/news/1",
-  }
+    category: "Tin y tế",
+    views: 12670,
+    content: ["Phó Giáo sư, Tiến sĩ ...", "Trên cương vị ..."],
+  },
 ];
 
 export default function Page() {
