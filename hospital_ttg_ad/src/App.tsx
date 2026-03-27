@@ -1,9 +1,17 @@
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Layout from "./layout/layout";
+import Dashboard from "./pages/Dashboard/index";
 function App() {
   return (
     <>
-      <h1 className="text-3xl font-bold text-blue-600">
-        Tailwind đang chạy
-      </h1>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Layout />}>
+            <Route index element={<Dashboard />} />
+            {/* <Route path="analytics" element={<Analytics />} /> */}
+          </Route>
+        </Routes>
+      </BrowserRouter>
     </>
   );
 }
