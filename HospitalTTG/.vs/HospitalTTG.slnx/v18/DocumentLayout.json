@@ -1,0 +1,254 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "D:\\01.Work\\Jobs\\hospital_ttg\\HospitalTTG\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{8D6B33C5-CEE1-20B5-A207-99CBB61F699C}|WebAPI\\WebAPI.csproj|d:\\01.work\\jobs\\hospital_ttg\\hospitalttg\\webapi\\controllers\\sysmenucontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8D6B33C5-CEE1-20B5-A207-99CBB61F699C}|WebAPI\\WebAPI.csproj|solutionrelative:webapi\\controllers\\sysmenucontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4A74909A-674F-85E1-3EBD-4A48BE69B96B}|Modules.Auth\\Modules.Auth.csproj|d:\\01.work\\jobs\\hospital_ttg\\hospitalttg\\modules.auth\\entities\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4A74909A-674F-85E1-3EBD-4A48BE69B96B}|Modules.Auth\\Modules.Auth.csproj|solutionrelative:modules.auth\\entities\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4A74909A-674F-85E1-3EBD-4A48BE69B96B}|Modules.Auth\\Modules.Auth.csproj|d:\\01.work\\jobs\\hospital_ttg\\hospitalttg\\modules.auth\\repositories\\userrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4A74909A-674F-85E1-3EBD-4A48BE69B96B}|Modules.Auth\\Modules.Auth.csproj|solutionrelative:modules.auth\\repositories\\userrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8D6B33C5-CEE1-20B5-A207-99CBB61F699C}|WebAPI\\WebAPI.csproj|d:\\01.work\\jobs\\hospital_ttg\\hospitalttg\\webapi\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{8D6B33C5-CEE1-20B5-A207-99CBB61F699C}|WebAPI\\WebAPI.csproj|solutionrelative:webapi\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{AE741FC9-2B8A-20D3-3810-54CAB6D313AC}|Shared.Abstractions\\Shared.Abstractions.csproj|d:\\01.work\\jobs\\hospital_ttg\\hospitalttg\\shared.abstractions\\interfaces\\iunitofwork.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{AE741FC9-2B8A-20D3-3810-54CAB6D313AC}|Shared.Abstractions\\Shared.Abstractions.csproj|solutionrelative:shared.abstractions\\interfaces\\iunitofwork.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{EFDB0562-F690-F8D0-FF3F-62757126FD2A}|Shared.Infrastructure\\Shared.Infrastructure.csproj|d:\\01.work\\jobs\\hospital_ttg\\hospitalttg\\shared.infrastructure\\data\\baserepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{EFDB0562-F690-F8D0-FF3F-62757126FD2A}|Shared.Infrastructure\\Shared.Infrastructure.csproj|solutionrelative:shared.infrastructure\\data\\baserepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{EFDB0562-F690-F8D0-FF3F-62757126FD2A}|Shared.Infrastructure\\Shared.Infrastructure.csproj|d:\\01.work\\jobs\\hospital_ttg\\hospitalttg\\shared.infrastructure\\extensions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{EFDB0562-F690-F8D0-FF3F-62757126FD2A}|Shared.Infrastructure\\Shared.Infrastructure.csproj|solutionrelative:shared.infrastructure\\extensions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4A74909A-674F-85E1-3EBD-4A48BE69B96B}|Modules.Auth\\Modules.Auth.csproj|d:\\01.work\\jobs\\hospital_ttg\\hospitalttg\\modules.auth\\extensions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4A74909A-674F-85E1-3EBD-4A48BE69B96B}|Modules.Auth\\Modules.Auth.csproj|solutionrelative:modules.auth\\extensions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4A74909A-674F-85E1-3EBD-4A48BE69B96B}|Modules.Auth\\Modules.Auth.csproj|d:\\01.work\\jobs\\hospital_ttg\\hospitalttg\\modules.auth\\configurations\\userconfiguration.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4A74909A-674F-85E1-3EBD-4A48BE69B96B}|Modules.Auth\\Modules.Auth.csproj|solutionrelative:modules.auth\\configurations\\userconfiguration.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8D6B33C5-CEE1-20B5-A207-99CBB61F699C}|WebAPI\\WebAPI.csproj|d:\\01.work\\jobs\\hospital_ttg\\hospitalttg\\webapi\\controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8D6B33C5-CEE1-20B5-A207-99CBB61F699C}|WebAPI\\WebAPI.csproj|solutionrelative:webapi\\controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{EFDB0562-F690-F8D0-FF3F-62757126FD2A}|Shared.Infrastructure\\Shared.Infrastructure.csproj|d:\\01.work\\jobs\\hospital_ttg\\hospitalttg\\shared.infrastructure\\data\\appdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{EFDB0562-F690-F8D0-FF3F-62757126FD2A}|Shared.Infrastructure\\Shared.Infrastructure.csproj|solutionrelative:shared.infrastructure\\data\\appdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8D6B33C5-CEE1-20B5-A207-99CBB61F699C}|WebAPI\\WebAPI.csproj|d:\\01.work\\jobs\\hospital_ttg\\hospitalttg\\webapi\\webapi.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{8D6B33C5-CEE1-20B5-A207-99CBB61F699C}|WebAPI\\WebAPI.csproj|solutionrelative:webapi\\webapi.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 244,
+          "SelectedChildIndex": 10,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:132:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:131:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:130:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{3ae79031-e1bc-11d0-8f78-00a0c9110057}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:128:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:128:0:{75188d03-9892-4ae2-abf1-207126247ce5}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{5a4e9529-b6a0-46b5-be4f-0f0b239bc0eb}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:129:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{6324226f-61b6-4f28-92ee-18d4b5fe1e48}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:128:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "SysMenuController.cs",
+              "DocumentMoniker": "D:\\01.Work\\Jobs\\hospital_ttg\\HospitalTTG\\WebAPI\\Controllers\\SysMenuController.cs",
+              "RelativeDocumentMoniker": "WebAPI\\Controllers\\SysMenuController.cs",
+              "ToolTip": "D:\\01.Work\\Jobs\\hospital_ttg\\HospitalTTG\\WebAPI\\Controllers\\SysMenuController.cs",
+              "RelativeToolTip": "WebAPI\\Controllers\\SysMenuController.cs",
+              "ViewState": "AgIAAEMAAAAAAAAAAADwvz4AAAAFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-11T21:13:40.665Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "User.cs",
+              "DocumentMoniker": "D:\\01.Work\\Jobs\\hospital_ttg\\HospitalTTG\\Modules.Auth\\Entities\\User.cs",
+              "RelativeDocumentMoniker": "Modules.Auth\\Entities\\User.cs",
+              "ToolTip": "D:\\01.Work\\Jobs\\hospital_ttg\\HospitalTTG\\Modules.Auth\\Entities\\User.cs",
+              "RelativeToolTip": "Modules.Auth\\Entities\\User.cs",
+              "ViewState": "AgIAAAgAAAAAAAAAAAAxwAQAAAAiAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-11T18:07:54.161Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "UserRepository.cs",
+              "DocumentMoniker": "D:\\01.Work\\Jobs\\hospital_ttg\\HospitalTTG\\Modules.Auth\\Repositories\\UserRepository.cs",
+              "RelativeDocumentMoniker": "Modules.Auth\\Repositories\\UserRepository.cs",
+              "ToolTip": "D:\\01.Work\\Jobs\\hospital_ttg\\HospitalTTG\\Modules.Auth\\Repositories\\UserRepository.cs",
+              "RelativeToolTip": "Modules.Auth\\Repositories\\UserRepository.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAuwAwAAABgAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-11T18:31:20.706Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "D:\\01.Work\\Jobs\\hospital_ttg\\HospitalTTG\\WebAPI\\appsettings.json",
+              "RelativeDocumentMoniker": "WebAPI\\appsettings.json",
+              "ToolTip": "D:\\01.Work\\Jobs\\hospital_ttg\\HospitalTTG\\WebAPI\\appsettings.json",
+              "RelativeToolTip": "WebAPI\\appsettings.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAA0AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2026-04-11T18:31:14.898Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "IUnitOfWork.cs",
+              "DocumentMoniker": "D:\\01.Work\\Jobs\\hospital_ttg\\HospitalTTG\\Shared.Abstractions\\Interfaces\\IUnitOfWork.cs",
+              "RelativeDocumentMoniker": "Shared.Abstractions\\Interfaces\\IUnitOfWork.cs",
+              "ToolTip": "D:\\01.Work\\Jobs\\hospital_ttg\\HospitalTTG\\Shared.Abstractions\\Interfaces\\IUnitOfWork.cs",
+              "RelativeToolTip": "Shared.Abstractions\\Interfaces\\IUnitOfWork.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-11T18:25:16.487Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "Extensions.cs",
+              "DocumentMoniker": "D:\\01.Work\\Jobs\\hospital_ttg\\HospitalTTG\\Shared.Infrastructure\\Extensions.cs",
+              "RelativeDocumentMoniker": "Shared.Infrastructure\\Extensions.cs",
+              "ToolTip": "D:\\01.Work\\Jobs\\hospital_ttg\\HospitalTTG\\Shared.Infrastructure\\Extensions.cs",
+              "RelativeToolTip": "Shared.Infrastructure\\Extensions.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA8AAAAiAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-11T18:24:46.8Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "Extensions.cs",
+              "DocumentMoniker": "D:\\01.Work\\Jobs\\hospital_ttg\\HospitalTTG\\Modules.Auth\\Extensions.cs",
+              "RelativeDocumentMoniker": "Modules.Auth\\Extensions.cs",
+              "ToolTip": "D:\\01.Work\\Jobs\\hospital_ttg\\HospitalTTG\\Modules.Auth\\Extensions.cs",
+              "RelativeToolTip": "Modules.Auth\\Extensions.cs",
+              "ViewState": "AgIAAAkAAAAAAAAAAAAiwAoAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-11T18:07:40.53Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "AuthController.cs",
+              "DocumentMoniker": "D:\\01.Work\\Jobs\\hospital_ttg\\HospitalTTG\\WebAPI\\Controllers\\AuthController.cs",
+              "RelativeDocumentMoniker": "WebAPI\\Controllers\\AuthController.cs",
+              "ToolTip": "D:\\01.Work\\Jobs\\hospital_ttg\\HospitalTTG\\WebAPI\\Controllers\\AuthController.cs",
+              "RelativeToolTip": "WebAPI\\Controllers\\AuthController.cs",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAAAAoAAAAmAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-11T18:06:48.763Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "BaseRepository.cs",
+              "DocumentMoniker": "D:\\01.Work\\Jobs\\hospital_ttg\\HospitalTTG\\Shared.Infrastructure\\Data\\BaseRepository.cs",
+              "RelativeDocumentMoniker": "Shared.Infrastructure\\Data\\BaseRepository.cs",
+              "ToolTip": "D:\\01.Work\\Jobs\\hospital_ttg\\HospitalTTG\\Shared.Infrastructure\\Data\\BaseRepository.cs",
+              "RelativeToolTip": "Shared.Infrastructure\\Data\\BaseRepository.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-11T18:06:11.777Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "UserConfiguration.cs",
+              "DocumentMoniker": "D:\\01.Work\\Jobs\\hospital_ttg\\HospitalTTG\\Modules.Auth\\Configurations\\UserConfiguration.cs",
+              "RelativeDocumentMoniker": "Modules.Auth\\Configurations\\UserConfiguration.cs",
+              "ToolTip": "D:\\01.Work\\Jobs\\hospital_ttg\\HospitalTTG\\Modules.Auth\\Configurations\\UserConfiguration.cs",
+              "RelativeToolTip": "Modules.Auth\\Configurations\\UserConfiguration.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAAsAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-11T18:08:04.692Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "AppDbContext.cs",
+              "DocumentMoniker": "D:\\01.Work\\Jobs\\hospital_ttg\\HospitalTTG\\Shared.Infrastructure\\Data\\AppDbContext.cs",
+              "RelativeDocumentMoniker": "Shared.Infrastructure\\Data\\AppDbContext.cs",
+              "ToolTip": "D:\\01.Work\\Jobs\\hospital_ttg\\HospitalTTG\\Shared.Infrastructure\\Data\\AppDbContext.cs",
+              "RelativeToolTip": "Shared.Infrastructure\\Data\\AppDbContext.cs",
+              "ViewState": "AgIAAAsAAAAAAAAAAAAAwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-11T18:06:10.669Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "WebAPI.csproj",
+              "DocumentMoniker": "D:\\01.Work\\Jobs\\hospital_ttg\\HospitalTTG\\WebAPI\\WebAPI.csproj",
+              "RelativeDocumentMoniker": "WebAPI\\WebAPI.csproj",
+              "ToolTip": "D:\\01.Work\\Jobs\\hospital_ttg\\HospitalTTG\\WebAPI\\WebAPI.csproj",
+              "RelativeToolTip": "WebAPI\\WebAPI.csproj",
+              "ViewState": "AgIAAA4AAAAAAAAAAAAAAA4AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2026-04-11T17:32:59.866Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

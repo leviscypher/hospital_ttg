@@ -1,0 +1,8 @@
+-Đặt lịch khám
+- menu động
+- tin tức
+- cơ cấu 
+- footer động
+
+- tin tức hiển thị mới nhất
+- 
