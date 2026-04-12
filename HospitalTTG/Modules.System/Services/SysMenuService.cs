@@ -26,7 +26,7 @@ public class SysMenuService : ISysMenuService
         return BuildMenuTree(menus, null);
     }
 
-    public async Task<MenuDto> GetMenuByIdAsync(long id, CancellationToken ct = default)
+    public async Task<MenuDto> GetMenuByIdAsync(Guid id, CancellationToken ct = default)
     {
         var menu = await _menuRepository.GetByIdAsync(id, ct)
             ?? throw new NotFoundException("Menu", id.ToString());
@@ -36,21 +36,20 @@ public class SysMenuService : ISysMenuService
 
     public async Task<MenuDto> CreateMenuAsync(CreateMenuRequest request, CancellationToken ct = default)
     {
-        if (request.ParentMenuId.HasValue)
+        if (request.ParentId.HasValue)
         {
-            _ = await _menuRepository.GetByIdAsync(request.ParentMenuId.Value, ct)
-                ?? throw new NotFoundException("ParentMenu", request.ParentMenuId.Value.ToString());
+            _ = await _menuRepository.GetByIdAsync(request.ParentId.Value, ct)
+                ?? throw new NotFoundException("ParentMenu", request.ParentId.Value.ToString());
         }
 
         var menu = new Menu
         {
-            ParentMenuId = request.ParentMenuId,
+            ParentId = request.ParentId,
             Title = request.Title,
             Url = request.Url,
             Icon = request.Icon,
             SortOrder = request.SortOrder,
             IsActive = request.IsActive,
-            IsExternal = request.IsExternal
         };
 
         await _menuRepository.AddAsync(menu, ct);
@@ -59,7 +58,7 @@ public class SysMenuService : ISysMenuService
         return MapToDto(menu);
     }
 
-    public async Task<MenuDto> UpdateMenuAsync(long id, UpdateMenuRequest request, CancellationToken ct = default)
+    public async Task<MenuDto> UpdateMenuAsync(Guid id, UpdateMenuRequest request, CancellationToken ct = default)
     {
         var menu = await _menuRepository.GetByIdAsync(id, ct)
             ?? throw new NotFoundException("Menu", id.ToString());
@@ -74,13 +73,12 @@ public class SysMenuService : ISysMenuService
                 ?? throw new NotFoundException("ParentMenu", request.ParentMenuId.Value.ToString());
         }
 
-        menu.ParentMenuId = request.ParentMenuId;
+        menu.ParentId = request.ParentMenuId;
         menu.Title = request.Title;
         menu.Url = request.Url;
         menu.Icon = request.Icon;
         menu.SortOrder = request.SortOrder;
         menu.IsActive = request.IsActive;
-        menu.IsExternal = request.IsExternal;
         menu.UpdatedDate = DateTime.UtcNow;
 
         _menuRepository.Update(menu);
@@ -89,7 +87,7 @@ public class SysMenuService : ISysMenuService
         return MapToDto(menu);
     }
 
-    public async Task DeleteMenuAsync(long id, CancellationToken ct = default)
+    public async Task DeleteMenuAsync(Guid id, CancellationToken ct = default)
     {
         var menu = await _menuRepository.GetByIdAsync(id, ct)
             ?? throw new NotFoundException("Menu", id.ToString());
@@ -112,20 +110,20 @@ public class SysMenuService : ISysMenuService
             .ToHashSet();
 
         var allMenus = await _menuRepository.GetAllAsync(ct);
-        var menuDict = allMenus.ToDictionary(m => m.MenuId);
+        var menuDict = allMenus.ToDictionary(m => m.Id);
 
-        var includedIds = new HashSet<long>(assignedMenuIds);
+        var includedIds = new HashSet<Guid>(assignedMenuIds);
         foreach (var menuId in assignedMenuIds)
         {
             var current = menuDict.GetValueOrDefault(menuId);
-            while (current?.ParentMenuId != null)
+            while (current?.ParentId != null)
             {
-                includedIds.Add(current.ParentMenuId.Value);
-                current = menuDict.GetValueOrDefault(current.ParentMenuId.Value);
+                includedIds.Add(current.ParentId.Value);
+                current = menuDict.GetValueOrDefault(current.ParentId.Value);
             }
         }
 
-        var includedMenus = allMenus.Where(m => m.IsActive && includedIds.Contains(m.MenuId)).ToList();
+        var includedMenus = allMenus.Where(m => m.IsActive && includedIds.Contains(m.Id)).ToList();
         return BuildMenuTree(includedMenus, null);
     }
 
@@ -151,22 +149,21 @@ public class SysMenuService : ISysMenuService
         await _unitOfWork.SaveChangesAsync(ct);
     }
 
-    private static List<MenuDto> BuildMenuTree(IEnumerable<Menu> menus, long? parentId)
+    private static List<MenuDto> BuildMenuTree(IEnumerable<Menu> menus, Guid? parentId)
     {
         return menus
-            .Where(m => m.ParentMenuId == parentId)
+            .Where(m => m.ParentId == parentId)
             .OrderBy(m => m.SortOrder)
             .Select(m => new MenuDto
             {
-                MenuId = m.MenuId,
-                ParentMenuId = m.ParentMenuId,
+                Id = m.Id,
+                ParentId = m.ParentId,
                 Title = m.Title,
                 Url = m.Url,
                 Icon = m.Icon,
                 SortOrder = m.SortOrder,
                 IsActive = m.IsActive,
-                IsExternal = m.IsExternal,
-                Children = BuildMenuTree(menus, m.MenuId)
+                Children = BuildMenuTree(menus, m.Id)
             })
             .ToList();
     }
@@ -175,14 +172,13 @@ public class SysMenuService : ISysMenuService
     {
         return new MenuDto
         {
-            MenuId = menu.MenuId,
-            ParentMenuId = menu.ParentMenuId,
+            Id = menu.Id,
+            ParentId = menu.ParentId,
             Title = menu.Title,
             Url = menu.Url,
             Icon = menu.Icon,
             SortOrder = menu.SortOrder,
             IsActive = menu.IsActive,
-            IsExternal = menu.IsExternal
         };
     }
 }

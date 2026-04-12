@@ -1,6 +1,8 @@
 using Contracts.Auth.DTOs;
 using Contracts.Auth.Interfaces;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Shared.Abstractions.Responses;
 
 namespace WebAPI.Controllers;
 
@@ -16,23 +18,34 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("login")]
-    public async Task<ActionResult<TokenResponse>> Login(LoginRequest request, CancellationToken ct)
+    [ProducesResponseType(typeof(ApiResponse<TokenResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult<ApiResponse<TokenResponse>>> Login(LoginRequest request, CancellationToken ct)
     {
         var result = await _authService.LoginAsync(request, ct);
-        return Ok(result);
+        return Ok(new ApiResponse<TokenResponse>(result, "Login successful"));
     }
 
     [HttpPost("register")]
-    public async Task<ActionResult<UserDto>> Register(RegisterRequest request, CancellationToken ct)
+    [ProducesResponseType(typeof(ApiResponse<UserDto>), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult<ApiResponse<UserDto>>> Register(RegisterRequest request, CancellationToken ct)
     {
         var result = await _authService.RegisterAsync(request, ct);
-        return Created($"api/auth/users/{result.Id}", result);
+        return Created($"api/auth/users/{result.Id}", new ApiResponse<UserDto>(result, "User registered successfully"));
     }
 
     [HttpPost("refresh")]
-    public async Task<ActionResult<TokenResponse>> RefreshToken([FromBody] string refreshToken, CancellationToken ct)
+    [ProducesResponseType(typeof(ApiResponse<TokenResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult<ApiResponse<TokenResponse>>> RefreshToken([FromBody] string refreshToken, CancellationToken ct)
     {
         var result = await _authService.RefreshTokenAsync(refreshToken, ct);
-        return Ok(result);
+        return Ok(new ApiResponse<TokenResponse>(result, "Token refreshed successfully"));
     }
 }

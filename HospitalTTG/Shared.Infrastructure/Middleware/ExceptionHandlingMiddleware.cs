@@ -1,5 +1,6 @@
 using System.Text.Json;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Shared.Abstractions.Exceptions;
 
 namespace Shared.Infrastructure.Middleware;
@@ -22,26 +23,34 @@ public class ExceptionHandlingMiddleware
         catch (BaseException ex)
         {
             context.Response.StatusCode = ex.StatusCode;
-            context.Response.ContentType = "application/json";
+            context.Response.ContentType = "application/problem+json";
 
-            var response = new { error = ex.Message };
+            var problemDetails = new ProblemDetails
+            {
+                Status = ex.StatusCode,
+                Title = "An error occurred",
+                Detail = ex.Message
+            };
 
             if (ex is ValidationException validationEx)
             {
-                var validationResponse = new { error = ex.Message, errors = validationEx.Errors };
-                await context.Response.WriteAsync(JsonSerializer.Serialize(validationResponse));
-                return;
+                problemDetails.Title = "Validation Error";
+                problemDetails.Extensions["errors"] = validationEx.Errors;
             }
 
-            await context.Response.WriteAsync(JsonSerializer.Serialize(response));
+            await context.Response.WriteAsync(JsonSerializer.Serialize(problemDetails));
         }
         catch (Exception)
         {
-            context.Response.StatusCode = 500;
-            context.Response.ContentType = "application/json";
+            context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+            context.Response.ContentType = "application/problem+json";
 
-            var response = new { error = "An unexpected error occurred." };
-            await context.Response.WriteAsync(JsonSerializer.Serialize(response));
+            var problemDetails = new ProblemDetails
+            {
+                Status = StatusCodes.Status500InternalServerError,
+                Title = "An unexpected error occurred."
+            };
+            await context.Response.WriteAsync(JsonSerializer.Serialize(problemDetails));
         }
     }
 }

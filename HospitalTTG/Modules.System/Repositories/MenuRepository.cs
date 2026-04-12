@@ -13,7 +13,7 @@ public class MenuRepository : IMenuRepository
         _dbSet = context.Set<Menu>();
     }
 
-    public async Task<Menu?> GetByIdAsync(long id, CancellationToken ct = default)
+    public async Task<Menu?> GetByIdAsync(Guid id, CancellationToken ct = default)
     {
         return await _dbSet.FindAsync([id], ct);
     }
@@ -23,10 +23,10 @@ public class MenuRepository : IMenuRepository
         return await _dbSet.OrderBy(m => m.SortOrder).ToListAsync(ct);
     }
 
-    public async Task<IReadOnlyList<Menu>> GetByParentIdAsync(long? parentId, CancellationToken ct = default)
+    public async Task<IReadOnlyList<Menu>> GetByParentIdAsync(Guid? parentId, CancellationToken ct = default)
     {
         return await _dbSet
-            .Where(m => m.ParentMenuId == parentId)
+            .Where(m => m.ParentId == parentId)
             .OrderBy(m => m.SortOrder)
             .ToListAsync(ct);
     }

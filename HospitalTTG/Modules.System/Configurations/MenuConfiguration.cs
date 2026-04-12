@@ -10,10 +10,7 @@ public class MenuConfiguration : IEntityTypeConfiguration<Menu>
     {
         builder.ToTable("Menus", "system");
 
-        builder.HasKey(m => m.MenuId);
-
-        builder.Property(m => m.MenuId)
-            .UseIdentityColumn();
+        builder.HasKey(m => m.Id);
 
         builder.Property(m => m.Title)
             .IsRequired()
@@ -31,7 +28,7 @@ public class MenuConfiguration : IEntityTypeConfiguration<Menu>
         builder.Property(m => m.UpdatedBy)
             .HasMaxLength(100);
 
-        builder.HasIndex(m => m.ParentMenuId);
+        builder.HasIndex(m => m.ParentId);
         builder.HasIndex(m => m.SortOrder);
     }
 }

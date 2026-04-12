@@ -10,10 +10,7 @@ public class RoleMenuConfiguration : IEntityTypeConfiguration<RoleMenu>
     {
         builder.ToTable("RoleMenus", "system");
 
-        builder.HasKey(rm => rm.RoleMenuId);
-
-        builder.Property(rm => rm.RoleMenuId)
-            .UseIdentityColumn();
+        builder.HasKey(rm => rm.Id);
 
         builder.Property(rm => rm.RoleId)
             .IsRequired()

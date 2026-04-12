@@ -2,7 +2,7 @@ namespace Contracts.System.DTOs;
 
 public class UpdateMenuRequest
 {
-    public long? ParentMenuId { get; set; }
+    public Guid? ParentMenuId { get; set; }
     public required string Title { get; set; }
     public string? Url { get; set; }
     public string? Icon { get; set; }
