@@ -14,6 +14,7 @@ public static class Extensions
             options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
 
         services.AddScoped<IUnitOfWork>(sp => sp.GetRequiredService<AppDbContext>());
+        services.AddHttpContextAccessor();
 
         return services;
     }

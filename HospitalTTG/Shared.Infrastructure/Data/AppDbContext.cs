@@ -1,4 +1,6 @@
 using System.Reflection;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Shared.Abstractions.Entities;
 using Shared.Abstractions.Interfaces;
@@ -8,9 +10,12 @@ namespace Shared.Infrastructure.Data;
 public class AppDbContext : DbContext, IUnitOfWork
 {
     private static readonly List<Assembly> _moduleAssemblies = [];
+    private readonly IHttpContextAccessor? _httpContextAccessor;
 
-    public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
+    public AppDbContext(DbContextOptions<AppDbContext> options,
+        IHttpContextAccessor? httpContextAccessor = null) : base(options)
     {
+        _httpContextAccessor = httpContextAccessor;
     }
 
     public static void RegisterModuleAssembly(Assembly assembly)
@@ -21,6 +26,9 @@ public class AppDbContext : DbContext, IUnitOfWork
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
+        var username = _httpContextAccessor?.HttpContext?.User
+            .FindFirstValue(ClaimTypes.Name);
+
         foreach (var entry in ChangeTracker.Entries<BaseEntity>())
         {
             switch (entry.State)
@@ -31,6 +39,17 @@ public class AppDbContext : DbContext, IUnitOfWork
                 case EntityState.Modified:
                     entry.Entity.UpdatedAt = DateTime.UtcNow;
                     break;
+            }
+        }
+
+        if (username != null)
+        {
+            foreach (var entry in ChangeTracker.Entries<AuditableEntity>())
+            {
+                if (entry.State == EntityState.Added)
+                    entry.Entity.CreatedBy = username;
+                else if (entry.State == EntityState.Modified)
+                    entry.Entity.UpdatedBy = username;
             }
         }
 

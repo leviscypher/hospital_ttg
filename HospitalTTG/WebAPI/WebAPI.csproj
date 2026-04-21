@@ -61,6 +61,9 @@
     <ProjectReference Include="..\Modules.Auth\Modules.Auth.csproj" />
     <ProjectReference Include="..\Modules.System\Modules.System.csproj" />
     <ProjectReference Include="..\Modules.Article\Modules.Article.csproj" />
+    <ProjectReference Include="..\Modules.Contact\Modules.Contact.csproj" />
+    <ProjectReference Include="..\Modules.Booking\Modules.Booking.csproj" />
+    <ProjectReference Include="..\Modules.Storage\Modules.Storage.csproj" />
   </ItemGroup>
 
 </Project>

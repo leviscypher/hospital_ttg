@@ -12,18 +12,17 @@ public static class Extensions
 {
     public static IServiceCollection AddArticleModule(this IServiceCollection services, IConfiguration configuration)
     {
-        AppDbContext.RegisterModuleAssembly(typeof(ArticleConfiguration).Assembly);
+        AppDbContext.RegisterModuleAssembly(typeof(CategoryConfiguration).Assembly);
 
         // Repositories
-        services.AddScoped<IArticleCategoryRepository, ArticleCategoryRepository>();
-        services.AddScoped<IArticleRepository, ArticleRepository>();
-        services.AddScoped<ITagRepository, TagRepository>();
-        services.AddScoped<IArticleTagRepository, ArticleTagRepository>();
+        services.AddScoped<ICategoryRepository, CategoryRepository>();
+        services.AddScoped<IContentRepository, ContentRepository>();
+        services.AddScoped<IContentMediaRepository, ContentMediaRepository>();
 
         // Services
-        services.AddScoped<IArticleCategoryService, ArticleCategoryService>();
-        services.AddScoped<IArticleService, ArticleService>();
-        services.AddScoped<ITagService, TagService>();
+        services.AddScoped<ICategoryService, CategoryService>();
+        services.AddScoped<IContentService, ContentService>();
+        services.AddScoped<IContentMediaService, ContentMediaService>();
 
         return services;
     }

@@ -30,4 +30,6 @@ bwin/
 [Bb]uildLog.*
 
 # Generated files
-Generated\ Files/
+
+# Uploads folder
+[Ww]ebAPI/uploads/

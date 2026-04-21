@@ -8,7 +8,7 @@ internal sealed class SysCategoryConfiguration : IEntityTypeConfiguration<SysCat
 {
     public void Configure(EntityTypeBuilder<SysCategory> builder)
     {
-        builder.ToTable("SysCategories", "system");
+        builder.ToTable("SysCategories");
 
         builder.HasKey(x => x.Id);
 

@@ -31,8 +31,12 @@ public class AuthService : IAuthService
         var user = await _userRepository.GetByUsernameAsync(request.Username, ct)
             ?? throw new NotFoundException("User", request.Username);
 
+        if (!user.IsActive)
+            throw new ValidationException(
+                new Dictionary<string, string[]> { { "Username", ["Account is disabled."] } });
+
         if (!BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
-            throw new Shared.Abstractions.Exceptions.ValidationException(
+            throw new ValidationException(
                 new Dictionary<string, string[]> { { "Password", ["Invalid password."] } });
 
         var token = GenerateAccessToken(user);
@@ -57,11 +61,11 @@ public class AuthService : IAuthService
     public async Task<UserDto> RegisterAsync(RegisterRequest request, CancellationToken ct = default)
     {
         if (await _userRepository.ExistsByUsernameAsync(request.Username, ct))
-            throw new Shared.Abstractions.Exceptions.ValidationException(
+            throw new ValidationException(
                 new Dictionary<string, string[]> { { "Username", ["Username already exists."] } });
 
         if (await _userRepository.ExistsByEmailAsync(request.Email, ct))
-            throw new Shared.Abstractions.Exceptions.ValidationException(
+            throw new ValidationException(
                 new Dictionary<string, string[]> { { "Email", ["Email already exists."] } });
 
         var user = new User
@@ -89,11 +93,15 @@ public class AuthService : IAuthService
     public async Task<TokenResponse> RefreshTokenAsync(string refreshToken, CancellationToken ct = default)
     {
         var user = await _userRepository.GetByRefreshTokenAsync(refreshToken, ct)
-            ?? throw new Shared.Abstractions.Exceptions.ValidationException(
+            ?? throw new ValidationException(
                 new Dictionary<string, string[]> { { "RefreshToken", ["Invalid refresh token."] } });
 
+        if (!user.IsActive)
+            throw new ValidationException(
+                new Dictionary<string, string[]> { { "RefreshToken", ["Account is disabled."] } });
+
         if (user.RefreshTokenExpiryTime < DateTime.UtcNow)
-            throw new Shared.Abstractions.Exceptions.ValidationException(
+            throw new ValidationException(
                 new Dictionary<string, string[]> { { "RefreshToken", ["Refresh token expired."] } });
 
         var newAccessToken = GenerateAccessToken(user);
@@ -113,6 +121,50 @@ public class AuthService : IAuthService
             ExpiresAt = DateTime.UtcNow.AddMinutes(
                 _configuration.GetValue<int>("Jwt:ExpiryMinutes", 60))
         };
+    }
+
+    public async Task LogoutAsync(Guid userId, CancellationToken ct = default)
+    {
+        var user = await _userRepository.GetByIdAsync(userId, ct)
+            ?? throw new NotFoundException("User", userId);
+
+        user.RefreshToken = null;
+        user.RefreshTokenExpiryTime = null;
+
+        _userRepository.Update(user);
+        await _unitOfWork.SaveChangesAsync(ct);
+    }
+
+    public async Task<UserDto> GetCurrentUserAsync(Guid userId, CancellationToken ct = default)
+    {
+        var user = await _userRepository.GetByIdAsync(userId, ct)
+            ?? throw new NotFoundException("User", userId);
+
+        return new UserDto
+        {
+            Id = user.Id,
+            Username = user.Username,
+            Email = user.Email,
+            FullName = user.FullName,
+            Role = user.Role
+        };
+    }
+
+    public async Task ChangePasswordAsync(Guid userId, ChangePasswordRequest request, CancellationToken ct = default)
+    {
+        var user = await _userRepository.GetByIdAsync(userId, ct)
+            ?? throw new NotFoundException("User", userId);
+
+        if (!BCrypt.Net.BCrypt.Verify(request.CurrentPassword, user.PasswordHash))
+            throw new ValidationException(
+                new Dictionary<string, string[]> { { "CurrentPassword", ["Current password is incorrect."] } });
+
+        user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.NewPassword);
+        user.RefreshToken = null;
+        user.RefreshTokenExpiryTime = null;
+
+        _userRepository.Update(user);
+        await _unitOfWork.SaveChangesAsync(ct);
     }
 
     private string GenerateAccessToken(User user)

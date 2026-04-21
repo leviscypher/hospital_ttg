@@ -2,11 +2,14 @@
 
 ## Tổng quan
 
-Hệ thống quản lý bệnh viện HospitalTTG, xây dựng trên .NET 10.0 với kiến trúc **Modular Monolith** và pattern **Service/Repository**. Không sử dụng CQRS/MediatR.
+Hệ thống quản lý bệnh viện HospitalTTG, xây dựng trên **.NET 10.0** với kiến trúc **Modular Monolith** và pattern **Service/Repository**. Không sử dụng CQRS/MediatR.
 
 **Database:** SQL Server  
 **Auth:** JWT Bearer + BCrypt  
-**ORM:** Entity Framework Core
+**ORM:** Entity Framework Core 10.0  
+**API Docs:** Swagger (Swashbuckle)  
+**Logging:** Serilog  
+**Frontend CORS:** `http://localhost:5173`
 
 ---
 
@@ -14,465 +17,532 @@ Hệ thống quản lý bệnh viện HospitalTTG, xây dựng trên .NET 10.0 v
 
 ```
 HospitalTTG/
-├── Directory.Build.props              # Shared build properties (TFM, nullable)
+├── Directory.Build.props              # TargetFramework, Nullable, ImplicitUsings cho toàn solution
 ├── Directory.Packages.props           # Central Package Management (NuGet versions)
 ├── HospitalTTG.slnx                  # Solution file (.NET modern format)
 │
-├── Shared.Abstractions/              # [Layer 1] Interfaces & base classes
-├── Shared.Infrastructure/            # [Layer 2] Implementations cross-cutting
-├── Contracts.Auth/                   # [Layer 3] Public API surface - Auth module
-├── Modules.Auth/                     # [Layer 4] Business logic - Auth module
-└── WebAPI/                           # [Layer 5] Host - điểm khởi chạy
+├── Shared.Abstractions/              # [Layer 1] Interfaces, base classes, exceptions
+├── Shared.Infrastructure/            # [Layer 2] Implementations cross-cutting (EF, middleware)
+│
+├── Contracts.Auth/                   # [Layer 3] Public surface - Auth module
+├── Contracts.System/                 # [Layer 3] Public surface - System module
+├── Contracts.Article/                # [Layer 3] Public surface - Article module
+├── Contracts.Contact/                # [Layer 3] Public surface - Contact module
+├── Contracts.Booking/                # [Layer 3] Public surface - Booking module
+│
+├── Modules.Auth/                     # [Layer 4] Business logic - Auth
+├── Modules.System/                   # [Layer 4] Business logic - System (Menu, RoleMenu, SysCategory)
+├── Modules.Article/                  # [Layer 4] Business logic - Article (Article, Category, Tag)
+├── Modules.Contact/                  # [Layer 4] Business logic - Contact
+├── Modules.Booking/                  # [Layer 4] Business logic - Booking
+│
+└── WebAPI/                           # [Layer 5] Host - Composition root, Controllers, Pipeline
 ```
 
 ### Solution Folders trong .slnx
 
-| Solution Folder | Chứa | Vai trò |
-|-----------------|------|---------|
-| `/Shared/` | Shared.Abstractions, Shared.Infrastructure | Code dùng chung toàn solution |
-| `/Contracts/` | Contracts.Auth, Contracts.{Module}... | Hợp đồng giao tiếp giữa modules |
-| `/Modules/` | Modules.Auth, Modules.{Module}... | Business logic từng module |
-| `/Host/` | WebAPI | Ứng dụng ASP.NET Core chạy chính |
+| Folder | Projects |
+|--------|----------|
+| `/Shared/` | Shared.Abstractions, Shared.Infrastructure |
+| `/Contracts/` | Contracts.Auth, Contracts.System, Contracts.Article, Contracts.Contact, Contracts.Booking |
+| `/Modules/` | Modules.Auth, Modules.System, Modules.Article, Modules.Contact, Modules.Booking |
+| `/Host/` | WebAPI |
 
 ---
 
-## 2. Quan hệ giữa các Project
-
-### Sơ đồ dependency
+## 2. Quy tắc Dependency
 
 ```
 WebAPI (Host)
-  ├──→ Modules.Auth
-  │      ├──→ Contracts.Auth
-  │      ├──→ Shared.Abstractions
-  │      └──→ Shared.Infrastructure ──→ Shared.Abstractions
-  └──→ Shared.Infrastructure
+  ├──→ Modules.Auth         ──→ Contracts.Auth, Shared.Abstractions, Shared.Infrastructure
+  ├──→ Modules.System       ──→ Contracts.System, Shared.Abstractions, Shared.Infrastructure
+  ├──→ Modules.Article      ──→ Contracts.Article, Shared.Abstractions, Shared.Infrastructure
+  ├──→ Modules.Contact      ──→ Contracts.Contact, Shared.Abstractions, Shared.Infrastructure
+  ├──→ Modules.Booking      ──→ Contracts.Booking, Shared.Abstractions, Shared.Infrastructure
+  └──→ Shared.Infrastructure ──→ Shared.Abstractions
 ```
-
-### Quy tắc dependency (QUAN TRỌNG)
 
 | Project | Được phép reference | KHÔNG được reference |
 |---------|--------------------|--------------------|
 | Shared.Abstractions | Không reference gì | Mọi project khác |
 | Shared.Infrastructure | Shared.Abstractions | Contracts, Modules |
-| Contracts.{Module} | Không reference gì (hoặc Shared.Abstractions nếu cần) | Modules, Infrastructure |
-| Modules.{Module} | Contracts của chính nó, Shared.Abstractions, Shared.Infrastructure, Contracts của module khác | Modules của module khác |
+| Contracts.{Module} | Không (hoặc Shared.Abstractions nếu cần) | Modules, Infrastructure |
+| Modules.{Module} | Contracts của chính nó, Shared.*, Contracts của module khác | Modules của module khác |
 | WebAPI | Tất cả Modules, Shared.Infrastructure | - |
 
-### Quy tắc giao tiếp giữa modules
-
-- Module A **KHÔNG BAO GIỜ** reference `Modules.B` trực tiếp
-- Module A muốn gọi Module B → reference `Contracts.B` và inject interface từ Contracts.B
-- Ví dụ: Modules.Scheduling muốn kiểm tra bệnh nhân → inject `IPatientService` từ `Contracts.Patients`
+**Giao tiếp giữa modules:** Module A reference `Contracts.B` và inject interface — KHÔNG reference `Modules.B`.
 
 ---
 
-## 3. Chi tiết từng Project
-
-### 3.1 Shared.Abstractions
-
-**Nhiệm vụ:** Định nghĩa interfaces, base classes, exceptions dùng chung. Không có dependency nặng (không EF Core, không ASP.NET).
-
-**Cấu trúc thư mục:**
+## 3. Shared.Abstractions
 
 ```
 Shared.Abstractions/
 ├── Entities/
-│   ├── BaseEntity.cs          # Id (Guid), CreatedAt, UpdatedAt
-│   └── AuditableEntity.cs     # + CreatedBy, UpdatedBy (kế thừa BaseEntity)
+│   ├── BaseEntity.cs            # Id (Guid), CreatedAt (DateTime), UpdatedAt (DateTime?)
+│   ├── AuditableEntity.cs       # : BaseEntity + CreatedBy (string?), UpdatedBy (string?)
+│   └── BaseTrackingEntity.cs    # Standalone: CreatedBy, CreatedDate, UpdatedBy, UpdatedDate
 ├── Interfaces/
-│   ├── IRepository.cs         # Generic CRUD: GetById, GetAll, Find, Add, Update, Delete
-│   └── IUnitOfWork.cs         # SaveChangesAsync
-└── Exceptions/
-    ├── BaseException.cs       # Abstract, chứa StatusCode (int)
-    ├── NotFoundException.cs   # HTTP 404
-    └── ValidationException.cs # HTTP 400, chứa Errors dictionary
+│   ├── IRepository.cs           # GetById, GetAll, Find, Add, Update, Delete
+│   └── IUnitOfWork.cs           # SaveChangesAsync
+├── Exceptions/
+│   ├── BaseException.cs         # abstract, StatusCode (int)
+│   ├── NotFoundException.cs     # HTTP 404 — NotFoundException(entityName, key)
+│   └── ValidationException.cs  # HTTP 400 — ValidationException(IDictionary<string,string[]>)
+└── Responses/
+    ├── ApiResponse<T>.cs        # { Data, Succeeded, Message }
+    └── PagedResponse<T>.cs      # : ApiResponse<T> + PageNumber, PageSize, TotalPages, TotalRecords
 ```
 
-**Khi nào thêm file vào đây:**
-- Tạo base class mới cho entities (VD: `SoftDeletableEntity`)
-- Tạo interface dùng chung (VD: `IClock`, `ICurrentUser`)
-- Tạo exception type mới (VD: `ForbiddenException`, `ConflictException`)
+### Quan trọng: BaseTrackingEntity vs BaseEntity
 
-**KHÔNG đặt vào đây:**
-- Code phụ thuộc EF Core, ASP.NET, hoặc package bên thứ 3
-- DTOs, request/response models (thuộc Contracts)
-- Business logic (thuộc Modules)
+`BaseTrackingEntity` là class **độc lập** (không kế thừa BaseEntity), dùng cho entities legacy hoặc có cấu trúc audit khác:
+- **Không có `Id` property** → phải tự khai báo `public Guid Id { get; set; }` trong entity
+- Field đặt tên khác: `CreatedDate` (không phải `CreatedAt`), `UpdatedDate` (không phải `UpdatedAt`)
+- AppDbContext **không** tự set timestamp cho `BaseTrackingEntity` — chỉ xử lý `BaseEntity` và `AuditableEntity`
 
-### 3.2 Shared.Infrastructure
+---
 
-**Nhiệm vụ:** Triển khai các cross-cutting concerns: database, middleware, base repository. Có dependency nặng (EF Core, ASP.NET).
-
-**Cấu trúc thư mục:**
+## 4. Shared.Infrastructure
 
 ```
 Shared.Infrastructure/
 ├── Data/
-│   ├── AppDbContext.cs        # DbContext chung, implements IUnitOfWork
-│   │                          # - Auto set CreatedAt/UpdatedAt
-│   │                          # - Load configurations từ module assemblies
-│   └── BaseRepository.cs     # Generic repository implementation (CRUD)
+│   ├── AppDbContext.cs      # DbContext + IUnitOfWork, auto-timestamp, auto-audit
+│   └── BaseRepository.cs   # Generic IRepository<T> implementation
 ├── Middleware/
-│   └── ExceptionHandlingMiddleware.cs  # Bắt exception → JSON response
-└── Extensions.cs              # AddSharedInfrastructure(): đăng ký DbContext, UnitOfWork
+│   └── ExceptionHandlingMiddleware.cs  # Exception → ProblemDetails JSON
+└── Extensions.cs            # AddSharedInfrastructure(): DbContext + UnitOfWork + HttpContextAccessor
 ```
 
-**Cơ chế đăng ký Entity Configuration từ Modules:**
-
-AppDbContext dùng static method `RegisterModuleAssembly()` để nhận assembly chứa `IEntityTypeConfiguration`. Mỗi module gọi method này trong Extension method của mình:
+### AppDbContext — cơ chế auto-timestamp & audit
 
 ```csharp
-// Trong Modules.Auth/Extensions.cs
-AppDbContext.RegisterModuleAssembly(typeof(UserConfiguration).Assembly);
+// SaveChangesAsync tự động:
+// BaseEntity → Added: set CreatedAt; Modified: set UpdatedAt
+// AuditableEntity → đọc ClaimTypes.Name từ JWT → set CreatedBy / UpdatedBy
+public static void RegisterModuleAssembly(Assembly assembly)  // mỗi module gọi 1 lần
 ```
 
-AppDbContext sẽ tự động `ApplyConfigurationsFromAssembly()` cho tất cả assemblies đã đăng ký.
+### ExceptionHandlingMiddleware — response format
 
-**Khi nào thêm file vào đây:**
-- Tạo middleware mới (VD: `RequestLoggingMiddleware`)
-- Tạo base class infrastructure (VD: `CachedRepository`)
-- Thêm service cross-cutting (VD: `EmailService`, `FileStorageService`)
+Trả về `application/problem+json` theo chuẩn RFC 7807:
 
-### 3.3 Contracts.{Module} (VD: Contracts.Auth)
+```json
+// BaseException (NotFoundException, ValidationException):
+{ "status": 404, "title": "An error occurred", "detail": "User with key 'admin' was not found." }
 
-**Nhiệm vụ:** Định nghĩa "hợp đồng công khai" của một module — những gì THẾ GIỚI BÊN NGOÀI được phép biết và sử dụng.
+// ValidationException thêm:
+{ "status": 400, "title": "Validation Error", "detail": "...", "errors": { "Email": ["Email already exists."] } }
 
-**Cấu trúc thư mục:**
-
-```
-Contracts.Auth/
-├── DTOs/
-│   ├── LoginRequest.cs        # Input: Username, Password
-│   ├── RegisterRequest.cs     # Input: Username, Password, Email, FullName
-│   ├── TokenResponse.cs       # Output: AccessToken, RefreshToken, ExpiresAt
-│   └── UserDto.cs             # Output: Id, Username, Email, FullName, Role
-└── Interfaces/
-    └── IAuthService.cs        # LoginAsync, RegisterAsync, RefreshTokenAsync
+// Exception bất kỳ:
+{ "status": 500, "title": "An unexpected error occurred." }
+// Development: thêm "detail" (exception type + message) và "stackTrace"
 ```
 
-**Quy tắc viết Contracts:**
-- DTOs chỉ chứa properties, KHÔNG có logic
-- Interfaces chỉ expose những method mà module khác hoặc Controller cần gọi
-- KHÔNG để lộ chi tiết nội bộ (entities, repositories)
+---
 
-**Phân biệt:**
-- `IAuthService` → trong **Contracts** (vì Controller và modules khác cần dùng)
-- `IUserRepository` → trong **Modules** (vì chỉ AuthService nội bộ dùng)
+## 5. Modules hiện có
 
-### 3.4 Modules.{Module} (VD: Modules.Auth)
+### 5.1 Auth (`auth` → table `Users` - schema dbo)
 
-**Nhiệm vụ:** Triển khai toàn bộ business logic của module. Đây là "bên trong hộp đen".
+**Contracts.Auth:**
+- `LoginRequest`, `RegisterRequest`, `TokenResponse`, `UserDto`, `ChangePasswordRequest`
+- `IAuthService`: Login, Register, RefreshToken, Logout, GetCurrentUser, ChangePassword
 
-**Cấu trúc thư mục:**
+**Modules.Auth:**
+- `User : AuditableEntity` — Username, PasswordHash, Email, FullName, Role, RefreshToken, RefreshTokenExpiryTime, IsActive
+- `IUserRepository`: GetByUsername, GetByRefreshToken, ExistsByUsername, ExistsByEmail
+- `AuthService`: BCrypt verify, JWT generate (HMAC-SHA256), refresh token rotation
+- `Extensions.AddAuthModule()`: đăng ký JWT Bearer authentication + authorization
 
-```
-Modules.Auth/
-├── Entities/                  # Domain models (kế thừa BaseEntity/AuditableEntity)
-│   └── User.cs                # Username, PasswordHash, Email, FullName, Role,
-│                              # RefreshToken, RefreshTokenExpiryTime, IsActive
-├── Repositories/
-│   ├── IUserRepository.cs     # Interface: GetByUsername, ExistsByEmail...
-│   └── UserRepository.cs      # Implementation kế thừa BaseRepository<User>
-├── Services/
-│   └── AuthService.cs         # Implements IAuthService từ Contracts
-│                              # - Login (verify BCrypt, generate JWT)
-│                              # - Register (hash password, create user)
-│                              # - RefreshToken (validate & rotate tokens)
-├── Configurations/
-│   └── UserConfiguration.cs   # EF Core: table "Users" schema "auth",
-│                              # column constraints, unique indexes
-└── Extensions.cs              # AddAuthModule(): đăng ký DI cho toàn module
-```
+**JWT Claims trong token:** `NameIdentifier` (userId), `Name` (username), `Email`, `Role`
 
-**Extensions.cs pattern — cách đăng ký module:**
+**Controller:** `AuthController` — POST login, POST register, POST refresh, POST logout, GET me, PUT change-password
+
+---
+
+### 5.2 System (schema `system`)
+
+**Tables:** `system.Menus`, `system.RoleMenus`, `system.SysCategories`
+
+**Contracts.System:**
+- `ISysMenuService`: GetAllMenus, GetMenuById, CreateMenu, UpdateMenu, DeleteMenu, GetMenusByRole, AssignMenusToRole
+- `ISysCategoryService`: GetAll, GetById, Create, Update, Delete
+
+**Modules.System — Entities:**
+
+| Entity | Base class | Đặc điểm |
+|--------|------------|----------|
+| `Menu` | `BaseTrackingEntity` | Tự khai báo `Id`. Hỗ trợ cây (ParentId), SortOrder, IsActive |
+| `RoleMenu` | Không | Tự khai báo Id, RoleId (string), MenuId, CanView, CreatedBy, CreatedDate |
+| `SysCategory` | Không | Tự khai báo tất cả fields. Dùng `int?` cho CreateBy/UpdateBy. Hỗ trợ Ext fields |
+
+**Controller:** `SysMenuController` (GET, GET/{id}, POST, PUT/{id}, DELETE/{id}, GET role/{roleId}, POST role/assign), `SysCategoryController` (CRUD)
+
+---
+
+### 5.3 Article (schema dbo — không có schema riêng)
+
+**Tables:** `Categories`, `Contents`, `ContentMedias`
+
+**Contracts.Article:**
+
+- `ICategoryService`: GetAll, GetById, Create, Update, Delete
+- `IContentService`: GetAll, GetById, Create, Update, Delete
+- `IContentMediaService`: GetByContentId, Create, Delete
+
+**Modules.Article — Entities:**
+
+| Entity | Base class | Đặc điểm |
+|--------|------------|----------|
+| `Category` | `AuditableEntity` | ParentId (cây), Name, Slug, Type ('article'\|'album'\|'video'), Lang, SortOrder, IsActive |
+| `Content` | `AuditableEntity` | CategoryId, ContentType ('article'\|'album'\|'video'), Title, Slug, Intro, Body, Thumbnail, FileAttach, Tags (string denorm), Status (byte 0/1), IsHot, ViewCount, PublishedAt |
+| `ContentMedia` | `BaseEntity` | ContentId, MediaType ('image'\|'video'), Url, Caption, IsThumbnail, SortOrder |
+
+**Controllers:**
+
+- `CategoriesController` (route `api/categories`) — CRUD
+- `ContentsController` (route `api/contents`) — CRUD
+- `ContentMediasController` (route `api/content-medias`) — GET by-content/{id}, POST, DELETE
+
+**Lưu ý:** Controllers trả thẳng DTO, không wrap `ApiResponse<T>`. Tags được lưu dạng string phẳng trong Content (không có bảng riêng).
+
+---
+
+### 5.4 Contact (schema `contact`)
+
+**Table:** `contact.Contacts`
+
+**Contracts.Contact:**
+- `IContactService`: GetById, GetAll, Create, Delete
+- `ContactStatus` enum: `Unread`, `Read`, `Replied`
+
+**Modules.Contact:**
+- `Contact : AuditableEntity` — FullName, Email, Subject, Content, Status
+
+**Controller:** `ContactsController` — GET, GET/{id}, POST, DELETE/{id} (public, không có `[Authorize]`)
+
+---
+
+### 5.5 Booking (schema `booking`)
+
+**Table:** `booking.Bookings`
+
+**Contracts.Booking:**
+- `IBookingService`: GetById, GetAll, Create, Delete
+- `BookingStatus` enum: `Pending`, `Confirmed`, `Cancelled`
+
+**Modules.Booking:**
+- `Booking : AuditableEntity` — FullName, PhoneNumber, DateOfBirth, AppointmentDate, Symptoms, Status
+
+**Controller:** `BookingsController` — GET, GET/{id}, POST, DELETE/{id} (public, không có `[Authorize]`)
+
+---
+
+### 5.6 Storage (schema `dbo`)
+
+**Table:** `storage.StoredFiles`
+
+**Contracts.Storage:**
+- `IStorageService`: Upload, GetById, GetAll, Delete, Download
+- `FileDto`: Id, OriginalFileName, ContentType, FileSize, CreatedAt, CreatedBy
+
+**Modules.Storage:**
+- `StoredFile : AuditableEntity` — StoredFileName (GUID-based, unique), OriginalFileName, ContentType, FileSize, PhysicalPath
+- `IStoredFileRepository`: GetByStoredFileNameAsync
+- `StorageService`: validate extension whitelist + max size, lưu file lên disk, quản lý DB record
+- Config đọc từ `appsettings.json` section `Storage`: BasePath, AllowedExtensions, MaxFileSizeMb
+
+**Controller:** `StorageController` — `[Authorize]`, 5 endpoints:
+- `GET api/storage` — danh sách files
+- `GET api/storage/{id}` — metadata file
+- `POST api/storage` — upload (`multipart/form-data`)
+- `GET api/storage/{id}/download` — download file (`[AllowAnonymous]`)
+- `DELETE api/storage/{id}` — xóa file khỏi disk + DB
+
+---
+
+## 6. WebAPI — Composition Root
+
+### Program.cs — thứ tự đăng ký
 
 ```csharp
-public static IServiceCollection AddAuthModule(this IServiceCollection services, IConfiguration configuration)
+builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+builder.Services.AddCors(...)             // policy "Frontend" → localhost:5173
+builder.Services.AddSharedInfrastructure(...)  // DbContext + UnitOfWork
+builder.Services.AddAuthModule(...)            // JWT Auth + User DI
+builder.Services.AddSystemModule(...)          // Menu, SysCategory DI
+builder.Services.AddArticleModule(...)         // Article, Category, Tag DI
+builder.Services.AddContactModule(...)         // Contact DI
+builder.Services.AddBookingModule(...)         // Booking DI
+builder.Services.AddStorageModule(...)         // Storage DI
+
+// Pipeline (THỨ TỰ QUAN TRỌNG):
+app.UseSwagger() / app.UseSwaggerUI()     // chỉ Development
+app.UseMiddleware<ExceptionHandlingMiddleware>()
+app.UseCors("Frontend")
+app.UseHttpsRedirection()
+app.UseAuthentication()                   // trước Authorization
+app.UseAuthorization()
+app.MapControllers()
+```
+
+### Controller pattern chuẩn (Auth & System modules)
+
+```csharp
+[ApiController]
+[Route("api/[controller]")]
+[Authorize]
+public class XxxController : ControllerBase
 {
-    // 1. Đăng ký assembly cho EF Core configurations
-    AppDbContext.RegisterModuleAssembly(typeof(UserConfiguration).Assembly);
+    // Inject interface từ Contracts, không inject từ Modules
+    [HttpGet]
+    [ProducesResponseType(typeof(ApiResponse<IReadOnlyList<XxxDto>>), StatusCodes.Status200OK)]
+    public async Task<ActionResult<ApiResponse<IReadOnlyList<XxxDto>>>> GetAll(CancellationToken ct)
+    {
+        var result = await _service.GetAllAsync(ct);
+        return Ok(new ApiResponse<IReadOnlyList<XxxDto>>(result));
+    }
 
-    // 2. Đăng ký repositories
-    services.AddScoped<IUserRepository, UserRepository>();
+    // GET trả Ok(), POST tạo mới trả Created(), PUT trả Ok(), DELETE trả Ok(true)/NoContent()
+}
+```
 
-    // 3. Đăng ký services (interface từ Contracts → implementation từ Modules)
-    services.AddScoped<IAuthService, AuthService>();
+### Lấy userId từ JWT trong Controller
 
-    // 4. Cấu hình đặc thù của module (VD: JWT)
-    services.AddAuthentication(...)
-            .AddJwtBearer(...);
+```csharp
+private Guid GetCurrentUserId() =>
+    Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+```
 
+---
+
+## 7. NuGet Packages (Directory.Packages.props)
+
+| Package | Version | Dùng ở |
+|---------|---------|--------|
+| Microsoft.EntityFrameworkCore | 10.0.0 | Shared.Infrastructure |
+| Microsoft.EntityFrameworkCore.SqlServer | 10.0.0 | Shared.Infrastructure |
+| Microsoft.EntityFrameworkCore.Design | 10.0.0 | WebAPI (migrations) |
+| Microsoft.AspNetCore.Authentication.JwtBearer | 10.0.0 | Modules.Auth |
+| BCrypt.Net-Next | 4.0.3 | Modules.Auth |
+| FluentValidation.DependencyInjectionExtensions | 11.11.0 | Khai báo sẵn, chưa sử dụng |
+| Microsoft.AspNetCore.OpenApi | 10.0.5 | WebAPI |
+| Scalar.AspNetCore | 2.13.22 | Khai báo sẵn, chưa sử dụng |
+| Serilog.AspNetCore | 9.0.0 | WebAPI |
+| Swashbuckle.AspNetCore | 10.1.7 | WebAPI |
+
+---
+
+## 8. Database — Schemas & Tables
+
+| Schema | Tables | Module |
+|--------|--------|--------|
+| dbo | Users, Categories, Contents, ContentMedias, Menus, RoleMenus, SysCategories, Contacts, Bookings, StoredFiles | Tất cả modules |
+
+### Quản lý schema DB
+
+**Tất cả bảng dùng schema `dbo` (mặc định).** Không tạo schema riêng cho từng module.
+
+**Không dùng EF Core Migrations.** Mọi thay đổi DB được viết tay dưới dạng SQL script và chạy trực tiếp trên SQL Server.
+
+Script tham khảo: `create-database.sql` (toàn bộ schema ban đầu), `migrate-content-model.sql` (migration thủ công).
+
+Khi thêm bảng mới, viết script theo mẫu:
+
+```sql
+USE HospitalTTG;
+GO
+
+CREATE TABLE dbo.TableName (
+    Id               UNIQUEIDENTIFIER NOT NULL DEFAULT NEWID(),
+    -- ... các cột khác
+    CreatedAt        DATETIME2        NOT NULL DEFAULT GETUTCDATE(),
+    UpdatedAt        DATETIME2        NULL,
+    CreatedBy        NVARCHAR(450)    NULL,
+    UpdatedBy        NVARCHAR(450)    NULL,
+    CONSTRAINT PK_TableName PRIMARY KEY (Id)
+);
+GO
+```
+
+---
+
+## 9. Hướng dẫn thêm Module mới
+
+### Bước 1: Tạo Contracts.{Module}
+
+```bash
+dotnet new classlib -n Contracts.{Module}
+dotnet sln HospitalTTG.slnx add Contracts.{Module}/Contracts.{Module}.csproj --solution-folder Contracts
+```
+
+```
+Contracts.{Module}/
+├── Contracts.{Module}.csproj   # Không có ProjectReference
+├── DTOs/
+│   ├── {Module}Dto.cs
+│   ├── Create{Module}Request.cs
+│   └── Update{Module}Request.cs
+├── Enums/                       # Nếu cần
+│   └── {EnumName}.cs
+└── Interfaces/
+    └── I{Module}Service.cs
+```
+
+### Bước 2: Tạo Modules.{Module}
+
+```bash
+dotnet new classlib -n Modules.{Module}
+dotnet sln HospitalTTG.slnx add Modules.{Module}/Modules.{Module}.csproj --solution-folder Modules
+dotnet add Modules.{Module} reference Contracts.{Module} Shared.Abstractions Shared.Infrastructure
+dotnet add WebAPI reference Modules.{Module}
+```
+
+```
+Modules.{Module}/
+├── Modules.{Module}.csproj
+├── Entities/
+│   └── {Module}.cs             # : AuditableEntity (hoặc BaseEntity)
+├── Repositories/
+│   ├── I{Module}Repository.cs  # : IRepository<{Module}> + custom methods
+│   └── {Module}Repository.cs   # : BaseRepository<{Module}>
+├── Services/
+│   └── {Module}Service.cs      # implements I{Module}Service từ Contracts
+├── Configurations/
+│   └── {Module}Configuration.cs # IEntityTypeConfiguration
+└── Extensions.cs               # Add{Module}Module()
+```
+
+**Extensions.cs pattern:**
+
+```csharp
+public static IServiceCollection Add{Module}Module(this IServiceCollection services, IConfiguration configuration)
+{
+    AppDbContext.RegisterModuleAssembly(typeof({Module}Configuration).Assembly);
+    services.AddScoped<I{Module}Repository, {Module}Repository>();
+    services.AddScoped<I{Module}Service, {Module}Service>();
     return services;
 }
 ```
 
-### 3.5 WebAPI (Host)
-
-**Nhiệm vụ:** Composition root — nơi ghép tất cả modules lại, định nghĩa Controllers, cấu hình pipeline.
-
-**Cấu trúc thư mục:**
-
-```
-WebAPI/
-├── Controllers/
-│   └── AuthController.cs      # [Route("api/[controller]")]
-│                              # POST /api/auth/login
-│                              # POST /api/auth/register
-│                              # POST /api/auth/refresh
-├── Program.cs                 # Composition root
-├── appsettings.json           # ConnectionString, JWT config
-├── appsettings.Development.json
-└── Properties/
-    └── launchSettings.json    # HTTP: 5020, HTTPS: 7274
-```
-
-**Program.cs pattern — cách wire modules:**
+### Bước 3: Đăng ký trong WebAPI/Program.cs
 
 ```csharp
-// 1. Đăng ký services
-builder.Services.AddControllers();
-builder.Services.AddOpenApi();
-builder.Services.AddSharedInfrastructure(builder.Configuration);  // DbContext
-builder.Services.AddAuthModule(builder.Configuration);            // Auth module
-// builder.Services.AddPatientsModule(builder.Configuration);     // Thêm module mới ở đây
-
-// 2. Cấu hình pipeline (THỨ TỰ QUAN TRỌNG)
-app.UseMiddleware<ExceptionHandlingMiddleware>();  // Đầu tiên: bắt mọi exception
-app.UseHttpsRedirection();
-app.UseAuthentication();                           // Trước Authorization
-app.UseAuthorization();                            // Sau Authentication
-app.MapControllers();
+builder.Services.Add{Module}Module(builder.Configuration);
 ```
 
-**Quy tắc viết Controller:**
+### Bước 4: Tạo Controller
 
 ```csharp
 [ApiController]
 [Route("api/[controller]")]
-public class AuthController : ControllerBase
+[Authorize]
+public class {Module}sController : ControllerBase
 {
-    // Inject interface từ CONTRACTS, không phải từ Modules
-    private readonly IAuthService _authService;
-
-    // Method pattern:
-    [HttpPost("login")]
-    public async Task<ActionResult<TokenResponse>> Login(LoginRequest request, CancellationToken ct)
-    {
-        var result = await _authService.LoginAsync(request, ct);
-        return Ok(result);        // GET/POST trả Ok()
-        // return Created(...);   // POST tạo mới trả Created()
-        // return NoContent();    // PUT/DELETE trả NoContent()
-    }
+    private readonly I{Module}Service _{moduleCamel}Service;
+    // ... inject từ Contracts, không inject từ Modules
 }
 ```
+
+### Bước 5: Tạo bảng DB
+
+Viết SQL script thủ công và chạy trực tiếp trên SQL Server (xem mẫu ở section 8). Không dùng EF Core Migrations.
 
 ---
 
-## 4. Flow logic chung
+## 10. Quy ước đặt tên
 
-### 4.1 Request flow (từ HTTP đến Database)
+### Namespaces
 
-```
-HTTP Request
-  → ExceptionHandlingMiddleware (bắt exception)
-    → Authentication Middleware (verify JWT)
-      → Authorization Middleware (check role/policy)
-        → Controller (nhận request, gọi service)
-          → Service (business logic, validation)
-            → Repository (truy vấn database)
-              → AppDbContext (EF Core, SQL Server)
-            ← Repository trả entity
-          ← Service trả DTO
-        ← Controller trả ActionResult
-      ← JSON Response
-```
-
-### 4.2 Exception flow
-
-```
-Service throw NotFoundException("User", "admin")
-  → ExceptionHandlingMiddleware bắt được (là BaseException)
-    → Set StatusCode = 404
-    → Response: { "error": "User with key 'admin' was not found." }
-
-Service throw ValidationException({ "Email": ["Email already exists."] })
-  → ExceptionHandlingMiddleware bắt được (là ValidationException)
-    → Set StatusCode = 400
-    → Response: { "error": "One or more validation errors occurred.",
-                   "errors": { "Email": ["Email already exists."] } }
-
-Lỗi không mong đợi (NullReferenceException...)
-  → ExceptionHandlingMiddleware bắt được (là Exception)
-    → Set StatusCode = 500
-    → Response: { "error": "An unexpected error occurred." }
-```
-
-### 4.3 Entity lifecycle (auto timestamps)
-
-```
-Tạo mới entity → AppDbContext.SaveChangesAsync()
-  → ChangeTracker detect EntityState.Added
-    → Set entity.CreatedAt = DateTime.UtcNow
-
-Cập nhật entity → AppDbContext.SaveChangesAsync()
-  → ChangeTracker detect EntityState.Modified
-    → Set entity.UpdatedAt = DateTime.UtcNow
-```
-
----
-
-## 5. Hướng dẫn thêm Module mới
-
-Ví dụ: Thêm module **Patients** (Quản lý bệnh nhân)
-
-### Bước 1: Tạo Contracts.Patients
-
-```
-Contracts.Patients/
-├── Contracts.Patients.csproj     # Class Library, không dependency
-├── DTOs/
-│   ├── CreatePatientRequest.cs
-│   ├── UpdatePatientRequest.cs
-│   └── PatientDto.cs
-└── Interfaces/
-    └── IPatientService.cs
-```
-
-```csharp
-// Contracts.Patients/Interfaces/IPatientService.cs
-public interface IPatientService
-{
-    Task<PatientDto> GetByIdAsync(Guid id, CancellationToken ct = default);
-    Task<IReadOnlyList<PatientDto>> GetAllAsync(CancellationToken ct = default);
-    Task<PatientDto> CreateAsync(CreatePatientRequest request, CancellationToken ct = default);
-    Task<PatientDto> UpdateAsync(Guid id, UpdatePatientRequest request, CancellationToken ct = default);
-    Task DeleteAsync(Guid id, CancellationToken ct = default);
-}
-```
-
-### Bước 2: Tạo Modules.Patients
-
-```
-Modules.Patients/
-├── Modules.Patients.csproj       # References: Contracts.Patients,
-│                                 #   Shared.Abstractions, Shared.Infrastructure
-├── Entities/
-│   └── Patient.cs                # Kế thừa AuditableEntity
-├── Repositories/
-│   ├── IPatientRepository.cs     # Kế thừa IRepository<Patient> + methods riêng
-│   └── PatientRepository.cs      # Kế thừa BaseRepository<Patient>
-├── Services/
-│   └── PatientService.cs         # Implements IPatientService
-├── Configurations/
-│   └── PatientConfiguration.cs   # EF Core config, schema "patients"
-└── Extensions.cs                 # AddPatientsModule()
-```
-
-```csharp
-// Modules.Patients/Extensions.cs
-public static class Extensions
-{
-    public static IServiceCollection AddPatientsModule(this IServiceCollection services, IConfiguration configuration)
-    {
-        AppDbContext.RegisterModuleAssembly(typeof(PatientConfiguration).Assembly);
-        services.AddScoped<IPatientRepository, PatientRepository>();
-        services.AddScoped<IPatientService, PatientService>();
-        return services;
-    }
-}
-```
-
-### Bước 3: Đăng ký trong WebAPI
-
-```csharp
-// WebAPI/Program.cs — thêm 1 dòng
-builder.Services.AddPatientsModule(builder.Configuration);
-```
-
-```csharp
-// WebAPI/Controllers/PatientsController.cs
-[ApiController]
-[Route("api/[controller]")]
-[Authorize]  // Yêu cầu đăng nhập
-public class PatientsController : ControllerBase
-{
-    private readonly IPatientService _patientService;
-    // ... endpoints CRUD
-}
-```
-
-### Bước 4: Cập nhật Solution
-
-- Thêm project references trong .csproj
-- Thêm vào HospitalTTG.slnx:
-  ```xml
-  <Folder Name="/Contracts/">
-    <Project Path="Contracts.Patients/Contracts.Patients.csproj" />
-  </Folder>
-  <Folder Name="/Modules/">
-    <Project Path="Modules.Patients/Modules.Patients.csproj" />
-  </Folder>
-  ```
-
-### Bước 5: Migration
-
-```bash
-dotnet ef migrations add AddPatients --project Modules.Patients --startup-project WebAPI
-dotnet ef database update --startup-project WebAPI
-```
-
----
-
-## 6. Quy ước đặt tên
-
-### Projects
-- `Shared.Abstractions` — interfaces, base classes chung
-- `Shared.Infrastructure` — implementations chung
-- `Contracts.{Module}` — DTOs & interfaces công khai
-- `Modules.{Module}` — business logic nội bộ
-
-### Namespaces (tự động theo folder)
-- `Shared.Abstractions.Entities`
-- `Shared.Infrastructure.Data`
-- `Contracts.Auth.DTOs`
-- `Modules.Auth.Services`
-
-### Files
-- Entity: `User.cs`, `Patient.cs` — singular
-- Repository: `IUserRepository.cs` + `UserRepository.cs`
-- Service: `IAuthService.cs` (Contracts) + `AuthService.cs` (Modules)
-- Configuration: `UserConfiguration.cs`
-- DTO: `LoginRequest.cs`, `UserDto.cs`, `TokenResponse.cs`
-- Extension: `Extensions.cs` — mỗi project 1 file
+| Project | Namespace |
+|---------|-----------|
+| Shared.Abstractions | `Shared.Abstractions.Entities`, `.Interfaces`, `.Exceptions`, `.Responses` |
+| Shared.Infrastructure | `Shared.Infrastructure.Data`, `.Middleware` |
+| Contracts.Auth | `Contracts.Auth.DTOs`, `.Interfaces` |
+| Modules.Auth | `Modules.Auth.Entities`, `.Repositories`, `.Services`, `.Configurations` |
 
 ### Database
-- Schema: tên module lowercase (`auth`, `patients`, `scheduling`)
-- Table: PascalCase số nhiều (`Users`, `Patients`)
+
+- Schema: **luôn dùng `dbo`** cho tất cả modules — không tạo schema riêng
+- Table: PascalCase số nhiều (`Users`, `Menus`, `Bookings`, `StoredFiles`)
 - Column: PascalCase theo property name
+
+### Files
+
+- Entity: singular (`User.cs`, `Booking.cs`)
+- Repository: `I{Entity}Repository.cs` + `{Entity}Repository.cs`
+- Service (interface): trong **Contracts** → `I{Module}Service.cs`
+- Service (impl): trong **Modules** → `{Module}Service.cs`
+- Configuration: `{Entity}Configuration.cs`
+- Extension: `Extensions.cs` — mỗi project một file
 
 ---
 
-## 7. Cấu hình
+## 11. Lưu ý quan trọng
 
-### Directory.Build.props
-Áp dụng cho TẤT CẢ .csproj trong solution. Không cần lặp lại `<TargetFramework>`, `<Nullable>`, `<ImplicitUsings>` trong từng project.
+1. **KHÔNG dùng CQRS/MediatR** — dùng Service/Repository pattern trực tiếp.
 
-### Directory.Packages.props
-Quản lý NuGet version tập trung. Trong .csproj chỉ cần:
-```xml
-<PackageReference Include="Microsoft.EntityFrameworkCore" />  <!-- không cần Version -->
+2. **KHÔNG dùng EF Core navigation properties** trong entities.
+
+3. **`BaseTrackingEntity` không có Id** — phải tự khai báo `public Guid Id { get; set; }` trong entity kế thừa nó. AppDbContext cũng không tự set timestamp cho loại này.
+
+4. **Chọn base class đúng:**
+   - `AuditableEntity` → entity cần track người tạo/sửa với JWT username (recommended mặc định)
+   - `BaseEntity` → chỉ cần timestamp, không cần audit user
+   - `BaseTrackingEntity` → khi cần field naming khác (`CreatedDate` thay `CreatedAt`) hoặc entity legacy
+
+5. **Throw exception trong Service, không try-catch trong Controller:**
+   ```csharp
+   throw new NotFoundException("Booking", id);
+   throw new ValidationException(new Dictionary<string, string[]> { { "Email", ["Already exists."] } });
+   ```
+
+6. **Controller inject interface từ Contracts** — không inject Repository hoặc class từ Modules.
+
+7. **Thứ tự middleware** trong Program.cs RẤT QUAN TRỌNG — `UseAuthentication()` phải trước `UseAuthorization()`, `ExceptionHandlingMiddleware` đứng đầu sau Swagger.
+
+8. **Mỗi module phải gọi `AppDbContext.RegisterModuleAssembly()`** trong Extensions.cs — nếu quên, EF Core không biết entity configurations của module đó.
+
+9. **Response wrapper:** Auth và System controllers dùng `ApiResponse<T>`. Article, Booking, Contact controllers trả thẳng DTO. Khi tạo module mới, nên dùng `ApiResponse<T>` cho nhất quán.
+
+---
+
+## 12. Commands thường dùng
+
+```bash
+# Build
+dotnet build HospitalTTG.slnx
+
+# Run
+dotnet run --project WebAPI
+
+# Tạo project mới
+dotnet new classlib -n Contracts.{Module}
+dotnet new classlib -n Modules.{Module}
+dotnet sln HospitalTTG.slnx add Contracts.{Module}/Contracts.{Module}.csproj --solution-folder Contracts
+dotnet sln HospitalTTG.slnx add Modules.{Module}/Modules.{Module}.csproj --solution-folder Modules
+dotnet add Modules.{Module} reference Contracts.{Module} Shared.Abstractions Shared.Infrastructure
+dotnet add WebAPI reference Modules.{Module}
 ```
-Thêm package mới → thêm `<PackageVersion>` trong `Directory.Packages.props`.
 
-### appsettings.json
+---
+
+## 13. Cấu hình (appsettings.json)
 
 ```json
 {
   "ConnectionStrings": {
-    "DefaultConnection": "Server=localhost;Database=HospitalTTG;Trusted_Connection=True;TrustServerCertificate=True;"
+    "DefaultConnection": "Data Source=...;Initial Catalog=HospitalTTG;..."
+  },
+  "Cors": {
+    "AllowedOrigins": ["http://localhost:5173", "https://localhost:5173"]
   },
   "Jwt": {
-    "Key": "your-secret-key-at-least-32-characters",
+    "Key": "...",
     "Issuer": "HospitalTTG",
     "Audience": "HospitalTTG",
     "ExpiryMinutes": 60,
@@ -480,45 +550,3 @@ Thêm package mới → thêm `<PackageVersion>` trong `Directory.Packages.props
   }
 }
 ```
-
----
-
-## 8. Commands thường dùng
-
-```bash
-# Build
-dotnet build
-
-# Run
-dotnet run --project WebAPI
-
-# EF Core Migrations
-dotnet ef migrations add {Name} --project {ModuleProject} --startup-project WebAPI
-dotnet ef database update --startup-project WebAPI
-
-# Tạo project mới
-dotnet new classlib -n Contracts.Patients
-dotnet new classlib -n Modules.Patients
-dotnet sln HospitalTTG.slnx add Contracts.Patients/Contracts.Patients.csproj --solution-folder Contracts
-dotnet sln HospitalTTG.slnx add Modules.Patients/Modules.Patients.csproj --solution-folder Modules
-
-# Thêm project reference
-dotnet add Modules.Patients reference Contracts.Patients Shared.Abstractions Shared.Infrastructure
-dotnet add WebAPI reference Modules.Patients
-```
-
----
-
-## 9. Lưu ý quan trọng
-
-1. **Thứ tự middleware trong Program.cs RẤT QUAN TRỌNG** — `UseAuthentication()` phải trước `UseAuthorization()`, `ExceptionHandlingMiddleware` phải đầu tiên.
-
-2. **Mỗi module tự đăng ký assembly** qua `AppDbContext.RegisterModuleAssembly()` trong Extensions.cs — nếu quên, EF Core sẽ không biết entity configurations của module đó.
-
-3. **Controller chỉ inject interface từ Contracts** — không bao giờ inject Repository hoặc class từ Modules trực tiếp.
-
-4. **Mọi entity kế thừa BaseEntity hoặc AuditableEntity** — để tự động có Id, CreatedAt, UpdatedAt.
-
-5. **Throw custom exceptions trong Service** — middleware sẽ tự convert thành JSON response với status code phù hợp. Không cần try-catch trong Controller.
-
-6. **Không dùng CQRS/MediatR** — dùng Service/Repository pattern trực tiếp.

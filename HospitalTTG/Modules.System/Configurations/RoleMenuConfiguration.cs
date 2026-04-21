@@ -8,7 +8,7 @@ public class RoleMenuConfiguration : IEntityTypeConfiguration<RoleMenu>
 {
     public void Configure(EntityTypeBuilder<RoleMenu> builder)
     {
-        builder.ToTable("RoleMenus", "system");
+        builder.ToTable("RoleMenus");
 
         builder.HasKey(rm => rm.Id);
 
